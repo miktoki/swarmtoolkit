@@ -1,0 +1,44 @@
+.. Submodules
+.. ----------
+
+.. swtools.aux module
+.. ------------------
+
+..: swtools.aux
+..    :members:
+..    :undoc-members:
+..    :show-inheritance:
+..
+.. swtools.ops module
+.. ------------------
+..
+..: swtools.ops
+..    :members:
+..    :undoc-members:
+..    :show-inheritance:
+..
+.. swtools.sph module
+.. ------------------
+..
+..: swtools.sph
+..    :members:
+..    :undoc-members:
+..    :show-inheritance:
+..
+.. swtools.sw_io module
+.. --------------------
+..
+..: swtools.sw_io
+..    :members:
+..    :undoc-members:
+..    :show-inheritance:
+..
+.. swtools.vis module
+.. ------------------
+..
+..: swtools.vis
+..    :members:
+..    :undoc-members:
+..    :show-inheritance:
+..
+..

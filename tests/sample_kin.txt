@@ -1,0 +1,29 @@
+#cP2013 11 26  0  0  0.00000000    8224    ud IGS08 FIT TUD 
+## 1768 172800.00000000     0.00000000 56622 0.0000000000000
++    1   L47  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
++          0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
++          0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
++          0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
++          0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+++         0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+++         0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+++         0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+++         0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+++         0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+%c M  cc GPS ccc cccc cccc cccc cccc ccccc ccccc ccccc ccccc
+%c cc cc ccc ccc cccc cccc cccc cccc ccccc ccccc ccccc ccccc
+%f   .0000000   .000000000   .00000000000   .000000000000000
+%f   .0000000   .000000000   .00000000000   .000000000000000
+%i    0    0    0    0      0      0      0      0         0
+%i    0    0    0    0      0      0      0      0         0
+/* NOTE: HPF KINEMATIC SP3 TYPE FORMAT. NOT GUARANTEED TO   
+/*       WORK WITH STANDARD SP3 READ ROUTINE.               
+/* CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+/* CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+*  2013 11 25 23 59 59.99999988                             
+PL47   5031.197333   3106.469413   3497.973755      4.423740
+*  2013 11 26 00 00 09.99999976                             
+PL47   5064.270045   3126.229910   3432.338834      4.435211
+*  2013 11 26 00 00 19.99999973                             
+PL47   6780.785710    861.519249   -774.039168     12.268409
+EOF                                                         

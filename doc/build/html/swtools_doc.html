@@ -1,0 +1,1329 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Documentation &mdash; swtools 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="swtools 1.0.0 documentation" href="index.html" />
+    <link rel="next" title="Installation requirements" href="install.html" />
+    <link rel="prev" title="swtools index" href="index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <span class="target" id="module-swtools"><span id="swtools-doc"></span></span><div class="section" id="documentation">
+<h1>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h1>
+<p><cite>swtools</cite> is a toolbox intended to provide simple and quick access to
+the Swarm L1 and L2 products for Python3.</p>
+<dl class="docutils">
+<dt>Main features:</dt>
+<dd><ul class="first simple">
+<li>reading and introspection of CDF (Common Data Format) files and</li>
+</ul>
+<p class="last">the containing parameters to <cite>numpy.ndarray</cite>&#8216;s, whether the CDF&#8217;s
+are stored locally, within zip-files or on an ftp-server.
+- shift parameters with respect to each other in time, both using a
+user-defined time shift and by finding a best fit within a range
+using a minimizer. Parameters can also be aligned through
+interpolation to be evaluated at the same time values.
+- Compute the magnetic field and its derivative in the NEC frame
+from SHC ascii files.
+- Convenience functions to visualize plots using <cite>matplotlib</cite> and
+<cite>mpl_toolkits.basemap</cite>.</p>
+</dd>
+</dl>
+<p>The demo notebook, found under the demo directory gives some instructional
+examples on how this package may be used, and is a good way to quickly get
+started. The documentation provides a more comprehensive look at the features.</p>
+<dl class="docutils">
+<dt>Documentation shown below may also be found for each function:</dt>
+<dd><ul class="first last">
+<li><p class="first">by using the <code class="docutils literal"><span class="pre">help</span></code> function:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">help</span><span class="p">(</span><span class="n">swtools</span><span class="o">.</span><span class="n">getCDFparams</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">in <cite>ipython</cite> shell by typing <code class="docutils literal"><span class="pre">?</span></code> after the object:</p>
+<div class="highlight-python"><div class="highlight"><pre>&gt;&gt;&gt; swtools.getCDFparams?
+</pre></div>
+</div>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="function">
+<dt id="swtools.debug_info">
+<code class="descclassname">swtools.</code><code class="descname">debug_info</code><span class="sig-paren">(</span><em>activate=1</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.debug_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the verbosity level of the logger.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>activate</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; Possible values:
+- <code class="docutils literal"><span class="pre">activate&gt;0</span></code> : logger set to DEBUG (default)
+- <code class="docutils literal"><span class="pre">activate&lt;0</span></code> : logger set to CRITICAL (virtually no logging)
+- <code class="docutils literal"><span class="pre">activate=0</span></code> : logger set to INFO (nominal value)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="swtools.concatenate_values">
+<code class="descclassname">swtools.</code><code class="descname">concatenate_values</code><span class="sig-paren">(</span><em>*an</em>, <em>axis=None</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.concatenate_values" title="Permalink to this definition">¶</a></dt>
+<dd><p id="concatenate-values">Concatenate nD array&#8217;s along <cite>axis</cite>.</p>
+<p>Concatenate along last axis if none specified.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="swtools.dl_ftp">
+<code class="descclassname">swtools.</code><code class="descname">dl_ftp</code><span class="sig-paren">(</span><em>url='swarm-diss.eo.esa.int'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.dl_ftp" title="Permalink to this definition">¶</a></dt>
+<dd><p id="dl-ftp">Download files from ftp server.</p>
+<p>Download files from a specified ftp url using filtering and/or
+interactive specification, if not already downloaded to given location.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>url</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; url of filename(s) or filename directory used to search for cdf file.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>user</strong> (<em>str</em>) &#8211;
+ftp server username</li>
+<li><strong>pw</strong> (<em>str</em>) &#8211;
+ftp server password</li>
+<li><strong>dlloc</strong> (<em>str</em>) &#8211;
+location to download to</li>
+<li><strong>cdfsuffix</strong> &#8211;
+see <a class="reference internal" href="#getcdfparamlist">getCDFparamlist</a></li>
+<li><strong>use_filtering</strong> &#8211;
+see <a class="reference internal" href="#getcdflist">getCDFlist</a></li>
+<li><strong>param0</strong> &#8211;
+see <a class="reference internal" href="#getcdfparams">getCDFparams</a></li>
+<li><strong>sat</strong> &#8211;
+see <a class="reference internal" href="#getcdflist">getCDFlist</a></li>
+<li><strong>period</strong> &#8211;
+see <a class="reference internal" href="#getcdflist">getCDFlist</a></li>
+<li><strong>use_passive_mode</strong> (<em>bool, optional</em>) &#8211;
+Try to set this to <code class="docutils literal"><span class="pre">False</span></code> if having difficulties with
+connecting to ftp server (default <code class="docutils literal"><span class="pre">True</span></code>).</li>
+<li><strong>use_current</strong> (<em>bool, optional</em>) &#8211;
+ignore directories named &#8216;Previous&#8217; (default <code class="docutils literal"><span class="pre">True</span></code>).</li>
+<li><strong>use_color</strong> (<em>bool, optional</em>) &#8211;
+allow coloring in listing of files/directories
+(default <code class="docutils literal"><span class="pre">True</span></code>).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Paths to files specified for download. If only one file, a string
+will be returned.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">str or list of str</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal"><span class="pre">OSError</span></code> &#8211;
+if unable to connect to ftp server</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="swtools.extract_parameter">
+<code class="descclassname">swtools.</code><code class="descname">extract_parameter</code><span class="sig-paren">(</span><em>cdflist</em>, <em>parameter</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.extract_parameter" title="Permalink to this definition">¶</a></dt>
+<dd><p id="extract-parameter">Extract given parameter from cdf file.</p>
+<p>Extract a parameter&#8217;s values, unit and name from a list of cdf
+files and concatenate values along a given axis to a
+<cite>numpy.ndarray</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cdflist</strong> (<em>str or list of str</em>) &#8211; Path(s) of cdf file(s).</li>
+<li><strong>parameter</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Name of parameter within cdf file. If name is not known,
+parameters within cdf files may be shown using
+<a class="reference internal" href="#getcdfparamlist">getCDFparamlist</a>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>cat</strong> (<em>bool</em>) &#8211;
+concatenate parameter values (default <code class="docutils literal"><span class="pre">True</span></code>)</li>
+<li><strong>axis</strong> (<em>int</em>) &#8211;
+concatenate along specified axis. If <code class="docutils literal"><span class="pre">axis=None</span></code> it will
+concatenate along last axis. Ie. in a 5x4x2 array it will set
+axis to 3 (default <code class="docutils literal"><span class="pre">None</span></code>).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">list of parameter lists, which includes values, units and names
+of parameters. If only one parameter, it will not be contained
+within a list.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="https://docs.python.org/library/functions.html#list" title="(in Python v2.7)">list</a></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal"><span class="pre">CDFError</span></code> &#8211;
+if unable to decode any cdf file specified</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="swtools.getCDFlist">
+<code class="descclassname">swtools.</code><code class="descname">getCDFlist</code><span class="sig-paren">(</span><em>inloc=None</em>, <em>outloc='.'</em>, <em>sort_by_t=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.getCDFlist" title="Permalink to this definition">¶</a></dt>
+<dd><p id="getcdflist">Get a list of cdf&#8217;s from a given location if zip or cdf.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>inloc</strong> (<em>str, optional</em>) &#8211; Path or url of filename(s) or filename directory used to search
+for cdf file (default <code class="docutils literal"><span class="pre">None</span></code>).</li>
+<li><strong>outloc</strong> (<em>str, optional</em>) &#8211; Directory path of output files if input includes zip files or
+remote files. If directory does not exist it will be created
+(default <code class="docutils literal"><span class="pre">os.curdir</span></code>).</li>
+<li><strong>sort_by_t</strong> (<em>bool, optional</em>) &#8211; Sort cdf filelist by start time of product (requires filenames
+to follow standard ESA Swarm naming convention)
+(default <code class="docutils literal"><span class="pre">False</span></code>).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>cdfsuffix</strong> &#8211;
+see <a class="reference internal" href="#getcdfparamlist">getCDFparamlist</a>.</li>
+<li><strong>temp</strong> (<em>bool</em>) &#8211;
+Specify whether to store cdf files extracted from zip
+temporarily or not (default <code class="docutils literal"><span class="pre">False</span></code>).</li>
+<li><strong>includezip</strong> (<em>bool</em>) &#8211;
+Traverse zip files if cdf files already in directory
+(default <code class="docutils literal"><span class="pre">False</span></code>).</li>
+<li><strong>use_ftp</strong> (<em>bool</em>) &#8211;
+specify use of ftp server to locate cdf files. Will be
+overruled (implicitly set to True) if <cite>user</cite> is specified
+(see <a class="reference internal" href="#dl-ftp">dl_ftp</a>)(default <code class="docutils literal"><span class="pre">False</span></code>).</li>
+<li><strong>filter_param</strong> (<em>bool</em>) &#8211;
+Specify whether <cite>param0</cite> (if specified, see <a class="reference internal" href="#getcdfparams">getCDFparams</a>) will
+be used for filtering files based on filenames or not
+(default <code class="docutils literal"><span class="pre">False</span></code>).</li>
+<li><strong>sat</strong> (<em>str or list of str</em>) &#8211;
+Filter files based on satelite in filename, eg.
+<code class="docutils literal"><span class="pre">sat=['A','C']</span></code> will only include files from Alpha or
+Charlie, while <code class="docutils literal"><span class="pre">sat='AC'</span></code> will only accept the joint
+Alpha-Charlie product files (default <code class="docutils literal"><span class="pre">None</span></code>).</li>
+<li><strong>period</strong> (list of two <cite>datetime.datetime</cite> objects) &#8211;
+If a product is not (partially) within
+time window specified, product will be filtered away based on
+filename. Can alternatively be set using two of <cite>start_t</cite>,
+<cite>end_t</cite> and <cite>duration</cite> (default <code class="docutils literal"><span class="pre">None</span></code>).</li>
+<li><strong>start_t, end_t</strong> (<em>str, scalar or datetime.datetime</em>) &#8211;
+Start/end time of filter. Scalars
+will be interpreted as fractional days since MJD2000 and strings
+can follow the formats <code class="docutils literal"><span class="pre">'yyyy-mm-dd'</span></code>, <code class="docutils literal"><span class="pre">'yyyymmdd'</span></code>,
+<code class="docutils literal"><span class="pre">'yyyymmddThhmmss'</span></code> or <code class="docutils literal"><span class="pre">'yyyymmddhhmmss'</span></code> (default <code class="docutils literal"><span class="pre">None</span></code>).</li>
+<li><strong>duration</strong> (<em>scalar</em>) &#8211;
+Duration after <cite>start_t</cite> or before <cite>end_t</cite> in fractional days
+(default <code class="docutils literal"><span class="pre">None</span></code>).</li>
+<li><strong>param0</strong> &#8211;
+see <a class="reference internal" href="#getcdfparams">getCDFparams</a> .</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>cdfl</strong> &#8211;
+list of strings of absolute paths to cdf files found in <cite>inloc</cite>.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/library/functions.html#list" title="(in Python v2.7)">list</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>The <cite>inloc</cite> argument will be overwritten by any <cite>inloc</cite> entry in
+<cite>kwargs</cite>.</p>
+<p>If <cite>start_t</cite>. <cite>end_t</cite> and <cite>duration</cite> are all specified, <cite>duration</cite>
+will be ignored.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="swtools.getCDFparamlist">
+<code class="descclassname">swtools.</code><code class="descname">getCDFparamlist</code><span class="sig-paren">(</span><em>cdflist, cdfsuffix=['DBL', 'CDF']</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.getCDFparamlist" title="Permalink to this definition">¶</a></dt>
+<dd><p id="getcdfparamlist">List parameters in the given files if unique.</p>
+<p>Prints a list of parameters for each unique product type based on
+filename, and returns a list with corresponding information.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cdflist</strong> (<em>str or list of str</em>) &#8211; Path(s) of cdf file(s).</li>
+<li><strong>cdfsuffix</strong> (<em>str or list of str, optional</em>) &#8211; case-insensitive list of strings of file extensions to accept
+as valid cdf files (default <code class="docutils literal"><span class="pre">['DBL','CDF']</span></code>).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal"><span class="pre">CDFError</span></code> &#8211;
+if unable to decode any cdf file specified.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="swtools.getCDFparams">
+<code class="descclassname">swtools.</code><code class="descname">getCDFparams</code><span class="sig-paren">(</span><em>inloc</em>, <em>*params</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.getCDFparams" title="Permalink to this definition">¶</a></dt>
+<dd><p id="getcdfparams">Extract parameters from cdf input as a list.</p>
+<p>See <a class="reference internal" href="#getcdflist">getCDFlist</a> for a list of keyword arguments not specified here.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>inloc</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path or url of filename(s) or filename directory used to search for
+cdf file.</li>
+<li><strong>params</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Names of parameters to be extracted from <cite>inloc</cite>. If names are not
+known, parameters within cdf files may be shown using
+<a class="reference internal" href="#getcdfparamlist">getCDFparamlist</a>. Multiple parameters should be given as
+separate, comma-separated strings.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><p class="first"><strong>param0</strong> (<em>str</em>) &#8211;
+specify parameter name to use for filtering of files. If none
+specified first parameter in <cite>params</cite> is assumed. Will not be
+used unless <code class="docutils literal"><span class="pre">filter_param=True</span></code> is specified.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><a class="reference internal" href="#parameter">Parameter</a>&#8216;s as ordered in <cite>params</cite>. If only one parameter is
+specified, <a class="reference internal" href="#parameter">Parameter</a> will not be contained within a list.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="https://docs.python.org/library/functions.html#list" title="(in Python v2.7)">list</a></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal"><span class="pre">ValueError</span></code> &#8211;
+if no parameters specified</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Other keyword arguments are passed on to <a class="reference internal" href="#getcdflist">getCDFlist</a>,
+<a class="reference internal" href="#extract-parameter">extract_parameter</a> and <a class="reference internal" href="#dl-ftp">dl_ftp</a> where applicable.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#swtools.getCDFlist" title="swtools.getCDFlist"><code class="xref py py-func docutils literal"><span class="pre">getCDFlist()</span></code></a>, <a class="reference internal" href="#swtools.extract_parameter" title="swtools.extract_parameter"><code class="xref py py-func docutils literal"><span class="pre">extract_parameter()</span></code></a>, <a class="reference internal" href="#swtools.dl_ftp" title="swtools.dl_ftp"><code class="xref py py-func docutils literal"><span class="pre">dl_ftp()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="swtools.param_peek">
+<code class="descclassname">swtools.</code><code class="descname">param_peek</code><span class="sig-paren">(</span><em>in_arr_cdfl</em>, <em>parameter=None</em>, <em>n_show=5</em>, <em>axis=0</em>, <em>cataxis=None</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.param_peek" title="Permalink to this definition">¶</a></dt>
+<dd><p id="param-peek">Show some values contained in given cdf(s)/array.</p>
+<p>Print values from a cdf file, list of cdf files or <cite>numpy.ndarray</cite>:</p>
+<ul class="simple">
+<li>cdf input only: parameter name and units</li>
+<li>1D-array only :  first and last <cite>n_show</cite> values</li>
+<li>all : shape, max, min, mean and median values.
+number of zeros, NaN&#8217;s, and largest jumps along given axis</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>in_arr_cdfl</strong> (str or list of str or <cite>numpy.ndarray</cite>) &#8211; path to cdf file(s), or array.</li>
+<li><strong>parameter</strong> (<em>str, optional</em>) &#8211; if input is cdf file(s), parameter name should be specified. If
+names are not known, parameters within cdf files may be shown
+using <a class="reference internal" href="#getcdfparamlist">getCDFparamlist</a>. (default <code class="docutils literal"><span class="pre">None</span></code>).</li>
+<li><strong>n_show</strong> (<em>int, optional</em>) &#8211; number of values to show from start and end of 1D-array
+(default <code class="docutils literal"><span class="pre">5</span></code>).</li>
+<li><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; axis to view largest jumps over (default <code class="docutils literal"><span class="pre">0</span></code>).</li>
+<li><strong>cataxis</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; axis to concatenate over. If <code class="docutils literal"><span class="pre">cataxis=None</span></code> it will concatenate
+along last axis, e.g. in a 5x4x2 array it will set axis to 3
+(default <code class="docutils literal"><span class="pre">None</span></code>).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="swtools.read_sp3">
+<code class="descclassname">swtools.</code><code class="descname">read_sp3</code><span class="sig-paren">(</span><em>fname</em>, <em>doctype=2</em>, <em>SI_units=True</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.read_sp3" title="Permalink to this definition">¶</a></dt>
+<dd><p id="read-sp3">Read SP3 ascii files to array.</p>
+<p>Read orbital format &#8216;Standard Product # 3&#8217; (SP3) to numpy array of
+two SP3 document types  as shown by example 1 and example 2 in
+<a class="reference external" href="https://igscb.jpl.nasa.gov/igscb/data/format/sp3_docu.txt">https://igscb.jpl.nasa.gov/igscb/data/format/sp3_docu.txt</a> . Output
+may be converted to SI units.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fname</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path of SP3 file.</li>
+<li><strong>doctype</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; <p>Two SP3 document formats:</p>
+<blockquote>
+<div><ol class="arabic">
+<li>only position at given timestamps</li>
+<li>position and velocity at given timestamps with
+rate-of-change of clock correction</li>
+</ol>
+</div></blockquote>
+<p><cite>doctype</cite> corresponds to these two options (default <code class="docutils literal"><span class="pre">2</span></code>).</p>
+</li>
+<li><strong>SI_units</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Convert to SI-units from SP3 units (default <code class="docutils literal"><span class="pre">True</span></code>).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><code class="docutils literal"><span class="pre">[x,</span> <span class="pre">y,</span> <span class="pre">z,</span> <span class="pre">t,</span> <span class="pre">header]</span></code> for <code class="docutils literal"><span class="pre">doctype=1</span></code>,
+<code class="docutils literal"><span class="pre">[x,</span> <span class="pre">y,</span> <span class="pre">z,</span> <span class="pre">vx,</span> <span class="pre">vy,</span> <span class="pre">vz,</span> <span class="pre">dt,</span> <span class="pre">t,</span> <span class="pre">header]</span></code> for <code class="docutils literal"><span class="pre">doctype=2</span></code>,
+where <code class="docutils literal"><span class="pre">header</span></code> is the first 22 lines of the SP3 document as a
+string.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">list of <cite>numpy.ndarray</cite></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal"><span class="pre">EOFError</span></code> &#8211;
+If the specified SP3 file is empty.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="swtools.read_EFI_prov_txt">
+<code class="descclassname">swtools.</code><code class="descname">read_EFI_prov_txt</code><span class="sig-paren">(</span><em>fname</em>, <em>*params</em>, <em>filter_nominal=False</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.read_EFI_prov_txt" title="Permalink to this definition">¶</a></dt>
+<dd><p id="read-efi-prov-txt">Read provisional EFI products.</p>
+<p>Read an ascii file containing provisional EFI products.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fname</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path and filename of provisional EFI ascii file.</li>
+<li><strong>params</strong> &#8211; <p>Names of parameters to be extracted from <cite>fname</cite>. Possible values:
+- &#8216;timestamp&#8217;
+- &#8216;latitude&#8217;
+- &#8216;longitude&#8217;
+- &#8216;radius&#8217;
+- &#8216;n&#8217;
+- &#8216;t_elec&#8217;
+- &#8216;u_sc&#8217;
+- &#8216;flag&#8217;</p>
+<p>If no parameters are specified, all will be returned in a
+dictionary. Multiple parameters should be given as separate,
+comma-separated strings.</p>
+</li>
+<li><strong>filter_nominal</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Only extract data where <code class="docutils literal"><span class="pre">Flag=1</span></code> (default <code class="docutils literal"><span class="pre">False</span></code>).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">If parameters specified, returns list of <cite>numpy.ndarray</cite>&#8216;s; otherwise
+it will return dictionary of all parameter <cite>numpy.ndarray</cite>&#8216;s.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">List or dictionary</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>This function has not been subject to any optimization, and is slow.
+Multiple file support or data concatenation is as of yet not
+implemented.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="swtools.unzip_file">
+<code class="descclassname">swtools.</code><code class="descname">unzip_file</code><span class="sig-paren">(</span><em>input_file</em>, <em>output_loc</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.unzip_file" title="Permalink to this definition">¶</a></dt>
+<dd><p id="unzip-file">Unzip file to location if files in zip are not already present.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>input_file</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; path of zip file to extract content from.</li>
+<li><strong>output_loc</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; output path to extract content to.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>z</strong></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">zipfile.ZipFile</span></code> object</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="swtools.Parameter">
+<em class="property">class </em><code class="descclassname">swtools.</code><code class="descname">Parameter</code><span class="sig-paren">(</span><em>values</em>, <em>unit=''</em>, <em>name=''</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.Parameter" title="Permalink to this definition">¶</a></dt>
+<dd><p id="parameter">Container for a single parameter.</p>
+<p>Has 3 attributes:</p>
+<blockquote>
+<div><ul class="simple">
+<li>values</li>
+<li>name</li>
+<li>unit</li>
+</ul>
+</div></blockquote>
+<p><cite>values</cite> can also be accessed by calling the parameter
+(eg. <code class="docutils literal"><span class="pre">myparam()</span></code>) or by accessing its indices (eg. <code class="docutils literal"><span class="pre">myparam[2]</span></code>)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="swtools.align_param">
+<code class="descclassname">swtools.</code><code class="descname">align_param</code><span class="sig-paren">(</span><em>p1</em>, <em>p2</em>, <em>t1</em>, <em>t2</em>, <em>k=3</em>, <em>align_to=False</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.align_param" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote id="align-param">
+<div>Interpolate parameters such that time values overlap.</div></blockquote>
+<p>Given parameter arrays <span class="math">\(p_1(t_1)\)</span> and <span class="math">\(p_2(t_2)\)</span> with
+their corresponding time arrays one can downsample the most
+frequently sampled array, and align the arrays wrt. time (using
+interpolation) such that only one time array <span class="math">\(t\)</span> is required
+for <span class="math">\(p_1\)</span> and <span class="math">\(p_2\)</span>. Only overlapping temporal regions
+will be utilized. Upsampling may be forced using the <cite>align_to</cite>
+argument.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>p1</strong> (<em>1D numpy.ndarray</em>) &#8211; First parameter to align.</li>
+<li><strong>p2</strong> (<em>1D numpy.ndarray</em>) &#8211; Second parameter to align.</li>
+<li><strong>t1</strong> (<em>1D numpy.ndarray of datetime.datetime objects</em>) &#8211; time values of <cite>p1</cite>. Should have same length as <cite>p1</cite>. If
+<code class="docutils literal"><span class="pre">align_to=True</span></code>, <cite>t1</cite> will set the output frequency.</li>
+<li><strong>t2</strong> (<em>1D numpy.ndarray of datetime.datetime objects</em>) &#8211; time values of <cite>p2</cite>. Should have same length as <cite>p2</cite>.</li>
+<li><strong>k</strong> (<em>int, optional</em>) &#8211; Degree of the smoothing spline. Must be <code class="docutils literal"><span class="pre">1</span> <span class="pre">&lt;=</span> <span class="pre">k</span> <span class="pre">&lt;=</span> <span class="pre">5</span></code>
+(default <code class="docutils literal"><span class="pre">3</span></code>).</li>
+<li><strong>align_to</strong> (<em>bool, optional</em>) &#8211; Align <cite>p2</cite> to <cite>p1</cite> independent of respective frequency, instead of
+downsampling to lowest frequency of the two. This may be useful for
+aligning multiple parameters to a specific frequency, for
+upsampling, or for handling datasets where one of the parameters is
+not uniformly sampled (default <code class="docutils literal"><span class="pre">False</span></code>).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">(p1&#8217;,p2&#8217;,t) where <cite>p1&#8217;</cite> and <cite>p2&#8217;</cite> are sampled at <cite>t</cite> instead of at
+<cite>t1</cite> or <cite>t2</cite>. p1&#8217;,p2&#8217; and t are <cite>numpy.ndarray&#8217;s</cite>. As only the
+temporal overlap is utilized, the temporal span of the array will
+in general be less than or equal to the smallest temporal span of
+the two.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="https://docs.python.org/library/functions.html#tuple" title="(in Python v2.7)">tuple</a></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><code class="xref py py-exc docutils literal"><span class="pre">ValueError</span></code></p>
+<ul class="last simple">
+<li>if respective p,t pairs are not of same length.</li>
+<li>if length of t array is less than spline order.</li>
+<li>if time arrays are not ordered ascending.</li>
+<li>if unable to interpolate arrays.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>To be able to interpolate, the spline order must be less than the
+total number of time steps. This funtion assumes uniform sampling,
+and the sampling times are currently solely determined by the step
+length between the first two timesteps. If one of the parameters is
+uniformly sampled while the other is not, or one of the arrays
+contains non-finite numbers, <code class="docutils literal"><span class="pre">align_to=True</span></code> may be used with
+the finite, uniformly sampled parameter as <cite>p1</cite>.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#swtools.plot_align" title="swtools.plot_align"><code class="xref py py-func docutils literal"><span class="pre">plot_align()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="swtools.shift_param">
+<code class="descclassname">swtools.</code><code class="descname">shift_param</code><span class="sig-paren">(</span><em>p1</em>, <em>p2</em>, <em>t1</em>, <em>t2</em>, <em>delta_t=0</em>, <em>dt_lim=(-20</em>, <em>20)</em>, <em>v=1</em>, <em>spline_points=10000000.0</em>, <em>eval_width=None</em>, <em>k=3</em>, <em>auto=False</em>, <em>useminos=True</em>, <em>imincall=10000.0</em>, <em>bins=1000.0</em>, <em>return_delta=False</em>, <em>show=False</em>, <em>ext=2</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.shift_param" title="Permalink to this definition">¶</a></dt>
+<dd><p id="shift-param">Return values of <cite>p1</cite> and <cite>p2</cite> shifted by <cite>delta_t</cite>.</p>
+<p>Shift a parameter <span class="math">\(p_1(t_1)\)</span> wrt. a second parameter
+<span class="math">\(p_2(t_2)\)</span> by a time step <span class="math">\(\Delta t\)</span>. The shift can
+also be done automatically to find best fit by using a minimizer
+based on &#8216;SEAL Minuit&#8217;(<cite>iminuit</cite>) with interpolated values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>p1</strong> (<em>1D numpy.ndarray</em>) &#8211; Parameter to be shifted by <cite>delta_t</cite></li>
+<li><strong>p2</strong> (<em>1D numpy.ndarray</em>) &#8211; parameter to shift <cite>p1</cite> with respect to.</li>
+<li><strong>t1</strong> (<em>1D numpy.ndarray of datetime.datetime objects</em>) &#8211; time values of <cite>p1</cite>. Should have same length as <cite>p1</cite>.</li>
+<li><strong>t2</strong> (<em>1D numpy.ndarray of datetime.datetime objects</em>) &#8211; time values of <cite>p2</cite>. Should have same length as <cite>p2</cite>.</li>
+<li><strong>delta_t</strong> (<em>int,float, optional</em>) &#8211; time shift in seconds to shift <cite>p1</cite> by. If used together with the
+argument <cite>auto=True</cite>, this value will be used as a first guess to
+the best fit. It can then be set to <cite>None</cite> if <cite>dt_lim</cite> is set.
+A middle value will then be assumed (default <code class="docutils literal"><span class="pre">0</span></code>).</li>
+<li><strong>dt_lim</strong> (<em>int/float list_like of length 2 or int/float.</em>) &#8211; Maximum and minimum value of <cite>delta_t</cite> in seconds allowed for
+minimizing algorithm. If <cite>dt_lim</cite> is a number, symmetry round
+<cite>delta_t</cite> will be assumed, eg <code class="docutils literal"><span class="pre">[delta_t-dt_lim,delta_t+dt_lim]</span></code>.
+<cite>int</cite> or <cite>float</cite> must be non-negative. If <code class="docutils literal"><span class="pre">dt_lim</span> <span class="pre">=</span> <span class="pre">None</span></code> it
+will be set to <code class="docutils literal"><span class="pre">dt_lim=(delta_t</span> <span class="pre">-</span> <span class="pre">((1-eval_ratio)/2)*abs(delta_t),</span>
+<span class="pre">delta_t</span> <span class="pre">+</span> <span class="pre">((1-eval_ratio)/2)*abs(delta_t))</span></code>, where
+<code class="docutils literal"><span class="pre">eval_ratio=eval_width/len(p1)</span></code> (default <code class="docutils literal"><span class="pre">(-20,20)</span></code>).</li>
+<li><strong>v</strong> (<em>int, optional</em>) &#8211; Verbosity level of function. <code class="docutils literal"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">v</span> <span class="pre">&lt;=</span> <span class="pre">2</span></code> (default <code class="docutils literal"><span class="pre">1</span></code>).</li>
+<li><strong>spline_points</strong> (<em>int, optional</em>) &#8211; Number of points used to make a spline fit of p1 with. Number
+will be reduced if p1 has fewer points. Float values will be
+truncated (default <code class="docutils literal"><span class="pre">1e7</span></code>).</li>
+<li><strong>eval_width</strong> (<em>int, optional</em>) &#8211; Number of points in time to compare <cite>p1</cite> and <cite>p2</cite> values,
+centered around the value of <code class="docutils literal"><span class="pre">t1+delta_t</span></code>. Number will be
+reduced by increasing span of dt_lim to accommodate for all
+possible values of <cite>delta_t</cite>. If set to <code class="docutils literal"><span class="pre">eval_width=None</span></code> a
+width corresponding to 60% of the length of p2 will be used
+(default <code class="docutils literal"><span class="pre">None</span></code>).</li>
+<li><strong>k</strong> (<em>int, optional</em>) &#8211; Degree of the smoothing spline. Must be <code class="docutils literal"><span class="pre">1</span> <span class="pre">&lt;=</span> <span class="pre">k</span> <span class="pre">&lt;=</span> <span class="pre">5</span></code>.</li>
+<li><strong>auto</strong> (<em>bool, optional</em>) &#8211; Use minimizer to find best fit for <cite>delta_t</cite> (default <code class="docutils literal"><span class="pre">False</span></code>).</li>
+<li><strong>useminos</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; If <code class="docutils literal"><span class="pre">auto=True</span></code>,run
+<a class="reference external" href="http://iminuit.readthedocs.org/en/latest/api.html#iminuit.Minuit.minos">minos</a>
+(default <code class="docutils literal"><span class="pre">True</span></code>)</li>
+<li><strong>imincall</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; If <code class="docutils literal"><span class="pre">auto=True</span></code>, number of calls to migrad/minos. Float values
+will be truncated (default <code class="docutils literal"><span class="pre">1e4</span></code>)</li>
+<li><strong>bins</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; If <cite>auto=True</cite>, number of bins for profile of solution space (if
+no solution is found from initial <cite>delta_t</cite>, divide dt_lim into
+<cite>bins</cite>, and find best solution out of these). Also applicable for
+when visualizing profile using <code class="docutils literal"><span class="pre">show=True</span></code>. Float values will
+be truncated (default <code class="docutils literal"><span class="pre">1e3</span></code>).</li>
+<li><strong>return_delta</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; return <cite>delta_t</cite> as output (default <code class="docutils literal"><span class="pre">False</span></code>).</li>
+<li><strong>show</strong> (<a class="reference external" href="https://docs.python.org/library/constants.html#False" title="(in Python v2.7)"><em>False</em></a>) &#8211; show solution profile in a plot (see iminuit <a class="reference external" href="http://iminuit.readthedocs.org/en/latest/api.html#iminuit.Minuit.draw_profile">draw_profile</a>
+)(default <code class="docutils literal"><span class="pre">False</span></code>).</li>
+<li><strong>ext</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; <p>handling of values outside interpolation region:</p>
+<ul>
+<li>extrapolation = 0</li>
+<li>set to zero = 1</li>
+<li>raise error = 2</li>
+<li>set to constant(equal to boundary) = 3</li>
+</ul>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><ul class="simple">
+<li>a tuple of numpy.ndarray&#8217;s <code class="docutils literal"><span class="pre">(p1,p2,t1+delta_t,t2)</span></code> are returned.</li>
+<li><em>Only values with temporal overlap are returned. Output will be of</em></li>
+<li>equal length. If <cite>return_delta=True</cite>, a tuple</li>
+<li><code class="docutils literal"><span class="pre">(p1,p2,t1+delta_t,t2,delta_t)</span></code> will be returned, with delta_t as</li>
+<li><em>float.</em></li>
+</ul>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><code class="xref py py-exc docutils literal"><span class="pre">ValueError</span></code><ul>
+<li>if length&#8217;s are incompatible</li>
+<li>if <cite>eval_width</cite>&gt;length of p2</li>
+<li>if neither <cite>delta_t</cite> nor <cite>dt_lim</cite> are provided.</li>
+<li>if <code class="docutils literal"><span class="pre">delta_t=None</span></code> and <cite>dt_lim</cite> is a number.</li>
+<li>if <cite>dt_lim</cite> is negative</li>
+</ul>
+</li>
+<li><code class="xref py py-exc docutils literal"><span class="pre">IndexError</span></code> &#8211;
+if <cite>dt_lim</cite> has length less than 2.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>This function assumes uniform sampling rate, and may not give
+desired results if this is not the case. As minimizing functions
+can be non-trivial, some tweaking of arguments may be necessary
+to get optimal results.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#swtools.align_param" title="swtools.align_param"><code class="xref py py-func docutils literal"><span class="pre">align_param()</span></code></a>, <a class="reference internal" href="#swtools.where_overlap" title="swtools.where_overlap"><code class="xref py py-func docutils literal"><span class="pre">where_overlap()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="swtools.where_overlap">
+<code class="descclassname">swtools.</code><code class="descname">where_overlap</code><span class="sig-paren">(</span><em>t1</em>, <em>t2</em>, <em>delta_t=0</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.where_overlap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find overlap between two datetime arrays, where one array may be
+shifted by <cite>delta_t</cite>.</p>
+<p>This is essentially a convenience function to access
+<code class="docutils literal"><span class="pre">spacepy.toolbox.tOverlap(t1+delta_t,t2,presort=True)</span></code>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="swtools.fourier_transform">
+<code class="descclassname">swtools.</code><code class="descname">fourier_transform</code><span class="sig-paren">(</span><em>param</em>, <em>dt_t</em>, <em>norm=None</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.fourier_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fourier transformation of 1d array with corresponding dt information.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>param</strong> (<em>array_like</em>) &#8211; input parameter</li>
+<li><strong>dt_t</strong> (<em>float, datetime.timedelta or numpy.ndarray of datetime.datetime</em>) &#8211; sample time or array of parameter sampling times.</li>
+<li><strong>norm</strong> (<em>{None,'ortho'}</em>) &#8211; None : no scaling
+&#8216;ortho&#8217;: direct fourier transform scaled by <code class="docutils literal"><span class="pre">1/sqrt(n)</span></code>, with
+<code class="docutils literal"><span class="pre">n</span></code> being the length of <cite>param</cite> (default <code class="docutils literal"><span class="pre">None</span></code>).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><cite>numpy.ndarray</cite> of fourier transform of param, and <cite>numpy.ndarray</cite> of
+corresponding frequencies.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="https://docs.python.org/library/functions.html#tuple" title="(in Python v2.7)">tuple</a></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal"><span class="pre">TypeError</span></code> &#8211;
+if <cite>dt_t</cite> is array and content is not <cite>datetime.datetime</cite> objects</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Requires uniform temporal sampling.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="swtools.cyclic2rising">
+<code class="descclassname">swtools.</code><code class="descname">cyclic2rising</code><span class="sig-paren">(</span><em>a, lim=[-90, 90]</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.cyclic2rising" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Returns an array of monotonic rising values (requires first indices</dt>
+<dd>to be rising, and assumes approx. equidistant points).</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>a</strong> (<em>array_like</em>) &#8211; array of smooth cyclic values to be made monotonic rising.</li>
+<li><strong>lim</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; list of extremal(min,max) values within which <cite>a</cite> is cyclic
+(default <code class="docutils literal"><span class="pre">[-90,90]</span></code>).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">array of monotonic rising values</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><cite>numpy.ndarray</cite></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="swtools.rising2cyclic">
+<code class="descclassname">swtools.</code><code class="descname">rising2cyclic</code><span class="sig-paren">(</span><em>a, lim=[-90, 90]</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.rising2cyclic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an array of cyclic values between two extremal values
+(requires first indices to be rising)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>a</strong> (<em>array_like</em>) &#8211; array of monotonic rising values to be made cyclic</li>
+<li><strong>lim</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#list" title="(in Python v2.7)"><em>list</em></a>) &#8211; list of extremal(min,max) values to make array cyclic within
+(default <code class="docutils literal"><span class="pre">[-90,90]</span></code>).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">array of cyclic values</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><cite>numpy.ndarray</cite></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="swtools.interpolate2d_sphere">
+<code class="descclassname">swtools.</code><code class="descname">interpolate2d_sphere</code><span class="sig-paren">(</span><em>lat_rad</em>, <em>lon_rad</em>, <em>param</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.interpolate2d_sphere" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate on sphere using radians</p>
+<p>Convenience function to call <a class="reference external" href="http://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.RectSphereBivariateSpline.html">RectSphereBivariateSpline</a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>lat_rad</strong> (<em>array_like</em>) &#8211; 1-D array of latitude coordinates in strictly ascending order.
+Coordinates must be given in radians, and lie within <code class="docutils literal"><span class="pre">(0,</span> <span class="pre">pi)</span></code>.</li>
+<li><strong>lon_rad</strong> (<em>array_like</em>) &#8211; 1-D array of longitude coordinates in strictly ascending order.
+Coordinates must be given in radians and lie within the interval
+<code class="docutils literal"><span class="pre">(0,</span> <span class="pre">2*pi)</span></code>.</li>
+<li><strong>param</strong> (<em>array_like</em>) &#8211; 2-D array of parameter with shape <code class="docutils literal"><span class="pre">(lat_rad.size,</span> <span class="pre">lon_rad.size)</span></code></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Spline function to be used for evaluation of interpolation</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><cite>scipy.interpolate.RectSphereBivariateSpline</cite></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Keyword arguments passed on to <a class="reference external" href="http://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.RectSphereBivariateSpline.html">RectSphereBivariateSpline</a>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="swtools.where_diff">
+<code class="descclassname">swtools.</code><code class="descname">where_diff</code><span class="sig-paren">(</span><em>values, atol=None, rtol=None, pdiff=[75, 25], axis=0, no_jump=False</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.where_diff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get indices of values which are significantly different from the
+preceding values.</p>
+<p>Function to find discontinuities using absolute tolerance, relative
+tolerance and percentile differences over an array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>values</strong> (<em>array_like</em>) &#8211; input array to be evaluated</li>
+<li><strong>atol</strong> (<em>float, optional</em>) &#8211; absolute tolerance such that where the difference between any value
+and its preceeding value is larger than <cite>atol</cite> will be flagged as a
+discontinuity. May be combined with <cite>rtol</cite> to only flag
+intersection of <cite>atol</cite> and <cite>rtol</cite> (default <code class="docutils literal"><span class="pre">None</span></code>).</li>
+<li><strong>rtol</strong> (<em>float, optional</em>) &#8211; relative tolerance such that where the difference between any value
+and its preceeding value divided by its value is larger than <cite>rtol</cite>
+, it will be flagged as a discontinuity. May be combined with
+<cite>atol</cite> to only flag intersection of <cite>atol</cite> and  <cite>rtol</cite>
+(default <code class="docutils literal"><span class="pre">None</span></code>).</li>
+<li><strong>pdiff</strong> (<em>list of float of length 2, optional</em>) &#8211; Two values between 0 and 100. The percentile difference such that
+where the difference between any value and its preceeding value is
+larger than the difference between the values of the two
+percentiles of the data, it will be flagged as a discontinuity
+(default <code class="docutils literal"><span class="pre">[75,25]</span></code>).</li>
+<li><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; Axis in array over which to evaluate (default <code class="docutils literal"><span class="pre">0</span></code>).</li>
+<li><strong>no_jump</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Flag continuities instead of discontinuities (default <code class="docutils literal"><span class="pre">False</span></code>).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Indices of flagged values</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">ndarray or tuple of <cite>numpy.ndarrays</cite></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="swtools.get_Bnec">
+<code class="descclassname">swtools.</code><code class="descname">get_Bnec</code><span class="sig-paren">(</span><em>shc_fn</em>, <em>latitude</em>, <em>longitude</em>, <em>cols='all'</em>, <em>lmax=-1</em>, <em>lmin=-1</em>, <em>lmin_file=1</em>, <em>r=1</em>, <em>h=0</em>, <em>t_out=[]</em>, <em>k=-1</em>, <em>dB=False</em>, <em>ext=2</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.get_Bnec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute magnetic field components in NEC-frame from SHC ascii file.</p>
+<p>Get computation of the magnetic field components or its derivative
+for given latitude and longitude in the North-East-Center reference
+system given gaussian spherical harmonics coefficients file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>shc_fn</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path of input SHC ascii file</li>
+<li><strong>latitude</strong> (<em>array_like</em>) &#8211; latitude values to evaluate magnetic field at</li>
+<li><strong>longitude</strong> (<em>array_like</em>) &#8211; longitude values to evaluate magnetic field at</li>
+<li><strong>cols</strong> (<em>list_like, optional</em>) &#8211; List of columns to read from file. This should correspond to the
+columns the different times values coefficients will be
+read from. In a standard SHC file the first two columns (0 and 1)
+correspond to the degree (<code class="docutils literal"><span class="pre">l</span></code>) and order (<code class="docutils literal"><span class="pre">m</span></code>) of the
+harmonic and should not be included in <cite>cols</cite>. As such the default
+value <code class="docutils literal"><span class="pre">cols='all'</span></code> corresponds to <code class="docutils literal"><span class="pre">cols=range(2,2+N_times)</span></code>,
+where <cite>N_times</cite> is the number of time snapshots in the file.</li>
+<li><strong>lmin</strong> (<em>lmax,</em>) &#8211; Maximum and minimum  degree of harmonics <span class="math">\(l_{max}\)</span>
+(<span class="math">\(l_{min}\)</span>). If non-positive, suitable values will be set
+based on the number of coefficients (default <code class="docutils literal"><span class="pre">-1</span></code>).</li>
+<li><strong>lmin_file</strong> (<em>int, optional</em>) &#8211; Lowest value of degree in SHC file (default <code class="docutils literal"><span class="pre">1</span></code>).</li>
+<li><strong>r</strong> (<em>float, optional</em>) &#8211; Fractional radius at which to evaluate magnetic field. This is the
+radius divided by the reference radius 6371.2 km
+(see also <cite>h</cite>)(default <code class="docutils literal"><span class="pre">1</span></code>).</li>
+<li><strong>h</strong> (<em>float, optional</em>) &#8211; Height(in km) above reference radius 6371.2 km at which to evaluate
+magnetic field. A non-zero value of <cite>h</cite> will overwrite any
+value of <cite>r</cite> (default <code class="docutils literal"><span class="pre">0</span></code>).</li>
+<li><strong>t_out</strong> (<em>datetime.datetime, scalar or datetime/scalar list, optional</em>) &#8211; Times at which to evaluate magnetic field. Float values should
+correspond to fractional years. If left empty, times will be taken
+from the SHC file (default <code class="docutils literal"><span class="pre">[]</span></code>).</li>
+<li><strong>k</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; <p>Spline order for temporal interpolation. If not set, spline_order
+will be taken from SHC file. If <cite>k</cite> is greater than or equal to</p>
+<blockquote>
+<div>number of temporal snapshots, <cite>k</cite> will be reduced (default <code class="docutils literal"><span class="pre">-1</span></code>,
+implying set by SHC file).</div></blockquote>
+</li>
+<li><strong>dB</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Return interpolated magnetic field derivative dB/dt instead of
+magnetic field (default <code class="docutils literal"><span class="pre">False</span></code>).</li>
+<li><strong>ext</strong> (<em>{ 0 | 1 | 2 | 3 }</em>) &#8211; <p>If interpolation is performed, determine the behaviour when
+extrapolating:</p>
+<blockquote>
+<div>0 : return extrapolated value
+1 : return 0
+2 : raise error (default)
+3 : return boundary value</div></blockquote>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.ndarray with shape <code class="docutils literal"><span class="pre">(N_times,3,latitude,longtitude)</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#swtools.get_l_maxmin" title="swtools.get_l_maxmin"><code class="xref py py-func docutils literal"><span class="pre">get_l_maxmin()</span></code></a>, <code class="xref py py-func docutils literal"><span class="pre">read_gh_shc()</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="swtools.get_l_maxmin">
+<code class="descclassname">swtools.</code><code class="descname">get_l_maxmin</code><span class="sig-paren">(</span><em>arr_len</em>, <em>lmax=0</em>, <em>lmin=0</em>, <em>suppress=False</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.get_l_maxmin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Semi-brute force attempt to get a reasonable value of lmax
+(maximum degree) based on array length</p>
+<p>Idea based on the fact that the array length will never exceed
+<code class="docutils literal"><span class="pre">lmax**2</span></code>, but <code class="docutils literal"><span class="pre">lmax</span></code> will never be larger than
+<code class="docutils literal"><span class="pre">array</span> <span class="pre">length/2</span></code>. The algorithm then favours solutions with lower
+<code class="docutils literal"><span class="pre">lmax</span></code> where the array length does not correspond to a unique
+<code class="docutils literal"><span class="pre">(lmax,lmin)</span></code> pair. <code class="docutils literal"><span class="pre">lmax</span></code> and/or <code class="docutils literal"><span class="pre">lmin</span></code> may be set. If no pair
+is found, an error is raised.``suppress=True`` suppresses logger
+output.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="swtools.read_shc">
+<code class="descclassname">swtools.</code><code class="descname">read_shc</code><span class="sig-paren">(</span><em>shc_fn</em>, <em>cols='all'</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.read_shc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read values of gaussian coefficients (g,h) from column(s) in file.</p>
+<p>File should be ascii file obeying the SHC format.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>shc_fn</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path of input SHC ascii file</li>
+<li><strong>cols</strong> (<em>list_like</em>) &#8211; List of columns to read from file. This should correspond to the
+columns the different times values coefficients will be
+read from. In a standard SHC file the first two columns (0 and 1)
+correspond to the degree (l) and order (m) of the harmonic and
+should not be included in <cite>cols</cite>. As such the default value
+<code class="docutils literal"><span class="pre">cols='all'</span></code> corresponds to <code class="docutils literal"><span class="pre">cols=range(2,2+N_times)</span></code>, where
+<code class="docutils literal"><span class="pre">N_times</span></code> is the number of time snapshots in the file.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><p>Tuple with following values at given indices:</p>
+<ol class="arabic simple" start="0">
+<li>numpy.ndarray of gaussian coefficients with such that</li>
+</ol>
+<blockquote>
+<div><p><code class="docutils literal"><span class="pre">myarray[0]</span></code> gives all coefficients at the first time point,
+given that there are multiple time snapshots. Otherwise
+<code class="docutils literal"><span class="pre">array[0]</span></code> will only contain the first coefficient.</p>
+</div></blockquote>
+<ol class="arabic simple">
+<li>spline order <cite>k</cite> as an integer used to reconstruct model from</li>
+</ol>
+<blockquote>
+<div><p>time snapshots.</p>
+</div></blockquote>
+<ol class="arabic" start="2">
+<li><p class="first">number of columns as an integer.</p>
+</li>
+<li><dl class="first docutils">
+<dt>time of the temporal snapshots (in fractional years in the</dt>
+<dd><p class="first last">standard SHC format) as 1D <cite>numpy.ndarray</cite>.</p>
+</dd>
+</dl>
+</li>
+</ol>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Missing data values marked as NaN are currently not handled.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="swtools.plot_align">
+<code class="descclassname">swtools.</code><code class="descname">plot_align</code><span class="sig-paren">(</span><em>p1, p2, t1, t2, k=3, align_to=False, show=False, fmt_t=True, figsize=[12.0, 10.0], logx=False, logy=False, legends=[], lloc='best', lhide=False, colors=[], **plotkwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.plot_align" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience function which combines <a class="reference internal" href="#align-param">align_param</a> with <a class="reference internal" href="#plot-basic">plot_basic</a></p>
+<p>Align p1 and p2 using interpolation such that values will be sampled
+on the same time steps. Output will be the same as for <a class="reference internal" href="#plot-basic">plot_basic</a>.</p>
+<p>See <a class="reference internal" href="#align-param">align_param</a> and <a class="reference internal" href="#plot-basic">plot_basic</a> for more information on arguments.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="swtools.plot_basic">
+<code class="descclassname">swtools.</code><code class="descname">plot_basic</code><span class="sig-paren">(</span><em>x, y, *xy, show=False, fmt_t=True, figsize=[12.0, 10.0], logx=False, logy=False, legends=[], lloc='best', lhide=False, lbox=False, lfontsize=15, colors=[], **plotkwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.plot_basic" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote id="plot-basic">
+<div>Basic plot using <cite>matplotlib</cite>.</div></blockquote>
+<p>A convenience function to use <a class="reference external" href="http://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.plot">matplotlib.pyplot.plot</a>
+with some set parameters. Of particular note this function handles an
+x-axis with datetimes better than the default behaviour in matplotlib.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>array_like</em>) &#8211; Input x-values.</li>
+<li><strong>y</strong> (<em>array_like</em>) &#8211; Input y-values.</li>
+<li><strong>xy</strong> (<em>optional</em>) &#8211; Additional x- and y-values.</li>
+<li><strong>show</strong> (<em>bool, optional</em>) &#8211; Show plot (default <code class="docutils literal"><span class="pre">False</span></code>).</li>
+<li><strong>fmt_t</strong> (<em>bool, optional</em>) &#8211; Format datetime x-ticks (see <a class="reference external" href="http://matplotlib.org/api/figure_api.html?highlight=autofmt_xdate">matplotlib.figure.autofmt_xdate</a>)
+(default <code class="docutils literal"><span class="pre">True</span></code>).</li>
+<li><strong>figsize</strong> (<em>tuple of length 2, optional</em>) &#8211; Size of figure as tuple of width and height in inches
+(default <code class="docutils literal"><span class="pre">matplotlib.pyplot.rcParams[&quot;figure.figsize&quot;]</span></code>).</li>
+<li><strong>logx</strong> (<em>bool, optional</em>) &#8211; Set x-axis scale to log (default <code class="docutils literal"><span class="pre">False</span></code>).</li>
+<li><strong>logy</strong> (<em>bool, optional</em>) &#8211; Set y-axis scale to log (default <code class="docutils literal"><span class="pre">False</span></code>).</li>
+<li><strong>legends</strong> (<em>list_like, optional</em>) &#8211; Add legend(s)(default <code class="docutils literal"><span class="pre">[]</span></code>).</li>
+<li><strong>lloc</strong> (<em>str or int, optional</em>) &#8211; Location of legend. Can be one of:
+&#8216;best&#8217; : 0, (default)
+&#8216;upper right&#8217;  : 1,
+&#8216;upper left&#8217;   : 2,
+&#8216;lower left&#8217;   : 3,
+&#8216;lower right&#8217;  : 4,
+&#8216;right&#8217;        : 5,
+&#8216;center left&#8217;  : 6,
+&#8216;center right&#8217; : 7,
+&#8216;lower center&#8217; : 8,
+&#8216;upper center&#8217; : 9,
+&#8216;center&#8217;       : 10</li>
+<li><strong>lhide</strong> (<em>bool, optional</em>) &#8211; Do not show legends. Useful to combine legends with twinx legends
+(default <code class="docutils literal"><span class="pre">False</span></code>).</li>
+<li><strong>lbox</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; box legends in semi-transparent box (default <code class="docutils literal"><span class="pre">False</span></code>)</li>
+<li><strong>lfontsize</strong> (<em>scalar</em>) &#8211; fontsize of legend (default <code class="docutils literal"><span class="pre">15</span></code>)</li>
+<li><strong>colors</strong> (<em>list_like, optional</em>) &#8211; <dl class="docutils">
+<dt>Color cycle to use in plot (see <a href="#id1"><span class="problematic" id="id2">`</span></a>matplotlib.colors</dt>
+<dd>&lt;<a class="reference external" href="http://matplotlib.org/api/colors_api.html">http://matplotlib.org/api/colors_api.html</a>&gt;`_). Default will use
+colormap set in the rcParams</dd>
+</dl>
+<p>(default <code class="docutils literal"><span class="pre">[]</span></code>).</p>
+</li>
+<li><strong>plotkwargs</strong> (<em>optional</em>) &#8211; Additional keyword arguments to pass on to
+<a class="reference external" href="http://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.plot">matplotlib.pyplot.plot</a>, these will be overwritten if conflicting
+with other values.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><a class="reference external" href="http://matplotlib.org/api/figure_api.html#matplotlib.figure.Figure">matplotlib.figure.Figure</a>
+and
+<a class="reference external" href="http://matplotlib.org/api/axes_api.html#matplotlib.axes.Axes">matplotlib.axes.Axes</a>
+instances for plot</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/library/functions.html#tuple" title="(in Python v2.7)">tuple</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#swtools.plot_twinx" title="swtools.plot_twinx"><code class="xref py py-func docutils literal"><span class="pre">plot_twinx()</span></code></a>, <a class="reference internal" href="#swtools.plot_align" title="swtools.plot_align"><code class="xref py py-func docutils literal"><span class="pre">plot_align()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="swtools.plot_geo">
+<code class="descclassname">swtools.</code><code class="descname">plot_geo</code><span class="sig-paren">(</span><em>lon, lat, param, ptype='scatter', figsize=[12.0, 10.0], cmap='jet', cbar=True, dark_map=False, show=False, contourlevels=15, log_contour=False, show_lat=True, show_lon=False, **kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.plot_geo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot parameter on the globe using <cite>mpl_toolkits.basemap.Basemap</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>lon</strong> (<em>array_like</em>) &#8211; Longitude of <cite>param</cite>.</li>
+<li><strong>lat</strong> (<em>array_like</em>) &#8211; Latitude of <cite>param</cite>.</li>
+<li><strong>param</strong> (<em>array_like</em>) &#8211; Value of <cite>param</cite> at each <code class="docutils literal"><span class="pre">(lat,lon)</span></code>-coordinate.</li>
+<li><strong>ptype</strong> (<code class="docutils literal"><span class="pre">{'scatter'|'colormesh'|'contour'}</span></code>, optional) &#8211; Set plot type (default <code class="docutils literal"><span class="pre">'scatter'</span></code>).</li>
+<li><strong>figsize</strong> (<em>tuple, optional</em>) &#8211; Size of figure as tuple of width and height in inches
+(default <code class="docutils literal"><span class="pre">matplotlib.pyplot.rcParams[&quot;figure.figsize&quot;]</span></code>).</li>
+<li><strong>cmap</strong> (<em>matplotlib.colors.ColorMap</em>) &#8211; colormap to be used in plot
+(default <code class="docutils literal"><span class="pre">matplotlib.pyplot.rcParams[&quot;image.cmap&quot;]</span></code>).</li>
+<li><strong>cbar</strong> (<em>bool, optional</em>) &#8211; use colorbar (default <code class="docutils literal"><span class="pre">True</span></code>).</li>
+<li><strong>dark_map</strong> (<em>bool, optional</em>) &#8211; draw map with darker tones of gray (default <code class="docutils literal"><span class="pre">False</span></code>).</li>
+<li><strong>show</strong> (<em>bool, optional</em>) &#8211; Show plot (default <code class="docutils literal"><span class="pre">False</span></code>).</li>
+<li><strong>contourlevels</strong> (<em>int, optional</em>) &#8211; number of coutour levels to use in coutourplot (default <code class="docutils literal"><span class="pre">15</span></code>).</li>
+<li><strong>log_contour</strong> (<em>bool, optional</em>) &#8211; plot contour levels using logarithmic distances between lines.</li>
+<li><strong>show_lat</strong> (<em>bool, optional</em>) &#8211; show labels for latitude (default <code class="docutils literal"><span class="pre">True</span></code>).</li>
+<li><strong>show_lon</strong> (<em>bool, optional</em>) &#8211; show labels for longitude (default <code class="docutils literal"><span class="pre">False</span></code>).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><a class="reference external" href="http://matplotlib.org/api/figure_api.html#matplotlib.figure.Figure">matplotlib.figure.Figure</a> and <a class="reference external" href="http://matplotlib.org/basemap/api/basemap_api.html#mpl_toolkits.basemap.Basemap">mpl_toolkits.basemap.Basemap</a>
+object for plot.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/library/functions.html#tuple" title="(in Python v2.7)">tuple</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>See <a class="reference external" href="http://matplotlib.org/basemap/api/basemap_api.html">http://matplotlib.org/basemap/api/basemap_api.html</a> for full set
+of possible keyword arguments. In particular the projection can be
+set with <code class="docutils literal"><span class="pre">projection</span></code>, which is by default set to &#8216;moll&#8217;
+(Mollweide projection) in this funciton. In addition, depending on
+the value of <cite>ptype</cite>, the following values are used as default:</p>
+<p><cite>scatter</cite>:</p>
+<blockquote>
+<div><p>See mpl_toolkits.basemap.scatter
+default values:</p>
+<blockquote>
+<div><ul class="simple">
+<li>linewidths : 0.0</li>
+<li>vmin : min(param)</li>
+<li>vmax : max(param)</li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+<p><cite>colormesh</cite>:</p>
+<blockquote>
+<div><p>See mpl_toolkits.basemap.pcolormesh
+Note that as <cite>colormesh requires 2D arrays; providing
+``latlon=True`</cite> allows latitude and longitude to be converted to a
+2d mesh properly from two 1D arrays.
+default values:</p>
+<blockquote>
+<div><ul class="simple">
+<li>shading : flat</li>
+<li>alpha : 0.8</li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+<p><cite>contour</cite>:</p>
+<blockquote>
+<div><p>See mpl_toolkits.basemap.pcolormesh.contour
+Note that as <cite>colormesh requires 2D arrays; providing
+``latlon=True`</cite> allows latitude and longitude to be converted to a
+2d mesh properly from two 1D arrays.
+default values :</p>
+<blockquote>
+<div><ul class="simple">
+<li>animated : True</li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="swtools.plot_scatter">
+<code class="descclassname">swtools.</code><code class="descname">plot_scatter</code><span class="sig-paren">(</span><em>x, y, param, show=False, fmt_t=True, figsize=[12.0, 10.0], vmax=None, vmin=None, cmap='jet', cbar=True, **scatterkwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.plot_scatter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scatterplot with colorbar using matplotlib.pyplot.scatter.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>array_like</em>) &#8211; x-coordinates of <cite>param</cite>.</li>
+<li><strong>y</strong> (<em>array_like</em>) &#8211; y-coordinates of <cite>param</cite>.</li>
+<li><strong>param</strong> (<em>array_like</em>) &#8211; value(determining colour) of <cite>param</cite> at each (x,y)-coordinate.</li>
+<li><strong>show</strong> (<em>bool, optional</em>) &#8211; Show plot (default <code class="docutils literal"><span class="pre">False</span></code>).</li>
+<li><strong>fmt_t</strong> (<em>bool, optional</em>) &#8211; Format datetime x-ticks
+(see <a class="reference external" href="http://matplotlib.org/api/figure_api.html?highlight=autofmt_xdate">matplotlib.figure.autofmt_xdate</a> ) (default <code class="docutils literal"><span class="pre">True</span></code>).</li>
+<li><strong>figsize</strong> (<em>tuple of length 2, optional</em>) &#8211; Size of figure as tuple of width and height in inches
+(default <code class="docutils literal"><span class="pre">matplotlib.pyplot.rcParams[&quot;figure.figsize&quot;]</span></code>).</li>
+<li><strong>vmax</strong> (<em>scalar, optional</em>) &#8211; vmax sets the upper bound of the colour data. If either <cite>vmin</cite> or
+<cite>vmax</cite> are None, the min and max of the color array is used
+(default <code class="docutils literal"><span class="pre">None</span></code>).</li>
+<li><strong>vmin</strong> (<em>scalar, optional</em>) &#8211; vmin sets the lower bound of the colour data. If either <cite>vmin</cite> or
+<cite>vmax</cite> are None, the min and max of the color array is used
+(default <code class="docutils literal"><span class="pre">None</span></code>).</li>
+<li><strong>cmap</strong> (<em>matplotlib.colors.ColorMap</em>) &#8211; colormap to be used in plot
+(default <code class="docutils literal"><span class="pre">matplotlib.pyplot.rcParams[&quot;image.cmap&quot;]</span></code>).</li>
+<li><strong>cbar</strong> (<em>bool, optional</em>) &#8211; use colorbar (default <code class="docutils literal"><span class="pre">True</span></code>).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><ul class="first simple">
+<li><strong>s</strong> (<em>scalar or array_like</em>) &#8211;
+(size of points)**2 (default <code class="docutils literal"><span class="pre">3</span></code>).</li>
+<li><strong>linewidths</strong> (<em>scalar</em>) &#8211;
+(default <code class="docutils literal"><span class="pre">0.0</span></code>).</li>
+<li><strong>alpha</strong> (<em>scalar</em>) &#8211;
+blending value between 0(transparent) and 1(opaque).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><a class="reference external" href="http://matplotlib.org/api/figure_api.html#matplotlib.figure.Figure">matplotlib.figure.Figure</a> and <a class="reference external" href="http://matplotlib.org/api/axes_api.html#matplotlib.axes.Axes">matplotlib.axes.Axes</a>
+instances for plot as a tuple</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/library/functions.html#tuple" title="(in Python v2.7)">tuple</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="swtools.plot_twinx">
+<code class="descclassname">swtools.</code><code class="descname">plot_twinx</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>*xy</em>, <em>show=False</em>, <em>logy=False</em>, <em>legends=[]</em>, <em>lloc='best'</em>, <em>lall=True</em>, <em>lbox=False</em>, <em>lfontsize=15</em>, <em>ax=None</em>, <em>colors=[]</em>, <em>**plotkwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.plot_twinx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overplot with a twin x-axis.</p>
+<p>Share same x-axis as another plot, but with separate y-axis values.
+Should be used in conjunction with another plot function
+(eg. <a class="reference internal" href="#plot-basic">plot_basic</a>).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>array_like</em>) &#8211; Input x-values.</li>
+<li><strong>y</strong> (<em>array_like</em>) &#8211; Input y-values.</li>
+<li><strong>xy</strong> (<em>optional</em>) &#8211; Additional x- and y-values.</li>
+<li><strong>show</strong> (<em>bool, optional</em>) &#8211; Show plot (default False).</li>
+<li><strong>logy</strong> (<em>bool, optional</em>) &#8211; Set y-axis scale to log (default <code class="docutils literal"><span class="pre">False</span></code>).</li>
+<li><strong>legends</strong> (<em>list_like, optional</em>) &#8211; Add legend(s) (default <code class="docutils literal"><span class="pre">[]</span></code>).</li>
+<li><strong>lloc</strong> (<em>str or int, optional</em>) &#8211; Location of legend. Can be one of::
+&#8216;best&#8217;         : 0 (default)
+&#8216;upper right&#8217;  : 1
+&#8216;upper left&#8217;   : 2
+&#8216;lower left&#8217;   : 3
+&#8216;lower right&#8217;  : 4
+&#8216;right&#8217;        : 5
+&#8216;center left&#8217;  : 6
+&#8216;center right&#8217; : 7
+&#8216;lower center&#8217; : 8
+&#8216;upper center&#8217; : 9
+&#8216;center&#8217;       : 10</li>
+<li><strong>lall</strong> (<em>bool, optional</em>) &#8211; Combine legends from <cite>ax</cite> with <cite>legends</cite> (default <code class="docutils literal"><span class="pre">True</span></code>).</li>
+<li><strong>lbox</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; box legends in semi-transparent box (default <code class="docutils literal"><span class="pre">False</span></code>)</li>
+<li><strong>lfontsize</strong> (<em>scalar</em>) &#8211; fontsize of legend (default <code class="docutils literal"><span class="pre">15</span></code>)</li>
+<li><strong>ax</strong> (<a class="reference external" href="http://matplotlib.org/api/axes_api.html#matplotlib.axes.Axes" title="(in Matplotlib v1.5.1)"><em>matplotlib.axes.Axes</em></a>) &#8211; Axes instance of plot to share x-axis with. If <code class="docutils literal"><span class="pre">`ax=None`</span></code>, get
+current Axes instance (default None).</li>
+<li><strong>colors</strong> (<em>list_like, optional</em>) &#8211; <dl class="docutils">
+<dt>Color cycle to use in plot (see <a href="#id3"><span class="problematic" id="id4">`</span></a>matplotlib.colors</dt>
+<dd>&lt;<a class="reference external" href="http://matplotlib.org/api/colors_api.html">http://matplotlib.org/api/colors_api.html</a>&gt;`_). Default will use
+colormap set in the rcParams</dd>
+</dl>
+<p>(default <code class="docutils literal"><span class="pre">[]</span></code>).</p>
+</li>
+<li><strong>plotkwargs</strong> (<em>optional</em>) &#8211; Additional keyword arguments to pass on to
+<a class="reference external" href="http://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.plot">matplotlib.pyplot.plot</a>, these will be overwritten if conflicting
+with other values.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="http://matplotlib.org/api/axes_api.html#matplotlib.axes.Axes">matplotlib.axes.Axes</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#swtools.plot_basic" title="swtools.plot_basic"><code class="xref py py-func docutils literal"><span class="pre">plot_basic()</span></code></a>, <a class="reference internal" href="#swtools.plot_align" title="swtools.plot_align"><code class="xref py py-func docutils literal"><span class="pre">plot_align()</span></code></a></p>
+</div>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">swtools index</a></li>
+      <li>Next: <a href="install.html" title="next chapter">Installation requirements</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/swtools_doc.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Mikael Toresen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+      |
+      <a href="_sources/swtools_doc.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
