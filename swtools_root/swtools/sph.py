@@ -12,20 +12,23 @@ __all__=[ 'get_Bnec',
           'read_shc']
 
 
-#@jit #(cache=True,nogil=True,nopython=True) 
-#(array(float64, 2d, C) x 2)(uint8,uint8,float64,bool)
-def _get_legendre(nmax, mmax, theta, schmidtnormalize = True):
+def _get_legendre(PdP, theta, schmidtnormalize, out):
     """Legendre functions and its derivatives
     
         The functions are computed iteratively, using an algorithm from 
         "Spacecraft Attitude Determination and Control" by James Richard Wertz
         (http://books.google.no/books?id=GtzzpUN8VEoC&lpg=PP1&pg=PA781#v=onepage)
     """
-    if nmax<=0 or mmax<0:
-      return None, None
     
-    P = np.zeros((nmax+1,mmax+1))
-    dP = np.zeros((nmax+1,mmax+1))
+    
+    if hasattr(theta,'__len__'):
+        theta = theta[0]
+        schmidtnormalize = schmidtnormalize[0]
+
+    shp = PdP.shape
+    nmax = shp[1]-1
+    mmax = shp[2]-1
+
     S = np.zeros((nmax+1,mmax+1))
 
     #shorthand notation
@@ -34,45 +37,58 @@ def _get_legendre(nmax, mmax, theta, schmidtnormalize = True):
     
     #Initialization
     S[0, 0] = 1.
-    P[0, 0] = 1.
+    PdP[0, 0, 0] = 1.
     #dP[0,0]= 0
     
     #n=1 m=0
-    P[1,0]  = c * P[0,0]
-    dP[1,0] = c * dP[0,0] - s * P[0,0]
+    PdP[:,1,0]  = c * PdP[:,0,0]
+    PdP[1,1,0] -= s * PdP[0,0,0]
     S[1,0] = S[0,0]
     
     #n=1,m=1
     if mmax:
-      P[1, 1]  = s * P[0,0]
-      dP[1, 1] = s * dP[0,0] + c * P[0,0]
+      PdP[:, 1, 1]  = s * PdP[:,0,0]
+      PdP[1, 1, 1] += c * PdP[0,0,0]
       S[1, 1] = S[1,0]
             
     for n in range(2, nmax +1):
         #m=0
         S[n, 0] = S[n - 1, 0] * (2.*n - 1)/n
         Knm = ((n - 1)**2) / ((2*n - 1)*(2*n - 3))
-        P[n,0]  = c * P[n-1,0] - Knm*P[n-2,0]
-        dP[n,0] = c * dP[n-1,0] - s * P[n-1,0] - Knm * dP[n-2,0]
-        for m in range(1, min([n + 1, mmax + 1])):
-            S[n, m] = S[n, m - 1] * \
-              np.sqrt((n - m + 1)*(int(m == 1) + 1.)/(n + m))
-            if n == m:
-                P[n, n]  = s * P[n - 1, n - 1]
-                dP[n, n] = s * dP[n - 1, n - 1] + c * P[n - 1, n - 1]
-            else:
-                Knm = ((n - 1)**2 - m**2) / ((2*n - 1)*(2*n - 3))
-                P[n, m]  = c * P[n -1, m] - Knm*P[n - 2, m]
-                dP[n, m] = c * dP[n - 1, m] -\
-                  s * P[n - 1, m] - Knm * dP[n - 2, m]
+        #P[n,0]  = c * P[n-1,0] - Knm*P[n-2,0]
+        #dP[n,0] = c * dP[n-1,0] - s * P[n-1,0] - Knm * dP[n-2,0]
+        PdP[:,n,0] = c *PdP[:,n-1,0] - Knm*PdP[:,n-2,0] 
+        PdP[1,n,0] -= s*PdP[0,n-1,0]
+        #for m in range(1, min(n + 1, mmax + 1)):
+        #    S[n, m] = S[n, m - 1] * \
+        #      np.sqrt((n - m + 1)*(int(m == 1) + 1.)/(n + m))
+        #    if n == m:
+        #        PdP[:, n, n]  = s * PdP[:, n - 1, n - 1]
+        #        PdP[1, n, n] += c * PdP[0, n - 1, n - 1]
+        #    else:
+        #        Knm = ((n - 1)**2 - m**2) / ((2*n - 1)*(2*n - 3))
+        #        PdP[:, n, m]  = c * PdP[:, n -1, m] - Knm*PdP[:, n - 2, m]
+        #        PdP[1, n, m] -= s * PdP[0, n - 1, m]
+        m_arr = np.arange(1,min(n + 1, mmax + 1))
+        
+        S[n,m_arr] = S[n,m_arr-1] * np.sqrt((n - m_arr + 1)*((m_arr==1)+1)/(n+m_arr))
+        Knm = ((n - 1)**2 - m_arr**2) / ((2*n - 1)*(2*n - 3))
+        PdP[:, n, m_arr]  = c * PdP[:, n -1, m_arr] - Knm*PdP[:, n - 2, m_arr]
+        PdP[1, n, m_arr] -= s * PdP[0, n - 1, m_arr]
 
+        #overwrite for n==m
+        PdP[:, n, n]  = s * PdP[:, n - 1, n - 1]
+        PdP[1, n, n] += c * PdP[0, n - 1, n - 1]
+        
+ 
 
     if schmidtnormalize:
         # now apply Schmidt normalization
-        P *= S
-        dP*= S
+        PdP *= S
     
-    return P, dP
+    out=PdP
+    
+
 
 #@jit#(cache=True) #uint8(uint32,uint8,uint8)
 def get_l_maxmin(arr_len,lmax=0,lmin=0,suppress=False):
@@ -210,7 +226,11 @@ def read_shc(shc_fn,cols='all'):
   # currently not passing on N_min,N_max,N_step
   return gh,spline_order,len(cols),times
 
-#@jit(cache=True,nogil=True)
+def get_ghi(l,m,l_low=1):
+    if abs(m)>l:
+        return -1
+    return l**2 + 2*abs(m) - 2 - (m>0) - l_low**2
+
 def _Bnec_core(gh,lmax,lmin,lat_rad,lon_rad,spline_order,r,dB,n_times,lmin_file=1):
   """Compute magnetic field in North-East-Center reference system"""
   X,Y,Z=0,1,2
@@ -221,9 +241,17 @@ def _Bnec_core(gh,lmax,lmin,lat_rad,lon_rad,spline_order,r,dB,n_times,lmin_file=
     lo_a_cs[m,1]=np.sin(m*lon_rad)
   
   Bnec=np.zeros((n_times,3,lla,llo))
+  la_arr = np.arange(lla,dtype=np.uint16)
+  t_arr = np.arange(n_times,dtype=np.uint16)
+  l_arr = np.arange(lmin,lmax+1,dtype=np.uint16)
+  PdP = np.zeros((2,lmax+1,lmax+1),dtype=np.float32)
+  #m arr goes from 1 to l
   
   for la in range(lla):#lat_rad loop
-    P,dP=_get_legendre(lmax,lmax,np.pi/2-lat_rad[la],True)
+    #_th = np.array((np.pi/2-lat_rad[la],),dtype=np.float32)
+    #_sn = np.array((True,),dtype=np.dtype(bool))
+    _get_legendre(PdP,np.pi/2-lat_rad[la],True,PdP)
+    P,dP = PdP
     for t in range(n_times):
       gh_i=(lmin-1)*(lmin+1) - (lmin_file-1)*(lmin_file+1)
     
@@ -244,13 +272,29 @@ def _Bnec_core(gh,lmax,lmin,lat_rad,lon_rad,spline_order,r,dB,n_times,lmin_file=
           Bnec[t,Z,la]-= P[l,m]*rpow*(l+1)\
               *(gh[t,gh_i]*lo_a_cs[m,0] + gh[t,gh_i+1]*lo_a_cs[m,1])  
           gh_i+=2
+    #gh_i = (lmin-1)*(lmin+1) - (lmin_file-1)*(lmin_file+1)
+    #m_arr = np.arange(-lmin,lmax+1,dtype=np.int16)
+    #gh_i = get_ghi(l_arr,m_arr,lmin_file)
+    #Bdiff1 = np.where(gh_i>0,gh[:,gh_i]*lo_a_cs .... ,np.zeros(gh_i.shape))
+    
+
+    #rpow = r**(-(l_arr+2))
+    #Bnec[:,X,la]+=PdP[1,l,0]*rpow*(gh[:, ])
+    #Bnec[:,Z,la]-= P[0,l,0]*rpow*(gh[:,gh_i])*(l_arr+1)
+
+    #Bnec[:,X,la]+=PdP[1,l_arr,l_arr]*rpow\
+    #          *(gh[t,gh_i]*lo_a_cs[m,0] + gh[t,gh_i+1]*lo_a_cs[m,1])
+        
+    #m=0
+
+
+   
   return Bnec    
 
-#@jit(cache=True,nogil=True)
+#optimizable?
 def _B_nec_spl(inarr,times,outval,der,k,b,c,ext=2):
   """Spline for all values of B_nec inside a latitude loop"""
   #a: dimension of B (or dB) ie: Bx,By,Bz
-  #b
   out=np.empty((len(outval),3,b,c))
   for ai in range(3):
       for bi in range(b):
@@ -389,3 +433,19 @@ def get_Bnec(shc_fn,latitude,longitude,cols='all',lmax=-1,lmin=-1,lmin_file=1,r=
         t_out=times
       return _B_nec_spl(Bnec,times,t_out,int(dB),spline_order,lla,llo)
 
+
+
+if aux._importable('numba'):
+    import numba
+    _get_legendre = numba.guvectorize(
+        ['void(float32[:,:,:],float32[:],boolean[:],float32[:,:,:])'],
+        '(m,n,p),(),()->(m,n,p)')(_get_legendre)
+    #get_l_maxmin = numba.jit(cache=True)(get_l_maxmin)
+    #_Bnec_core = numba.jit(cache=True)(_Bnec_core)
+    #_B_nec_spl = numba.jit(cache=True)(_B_nec_spl)
+else:
+    _get_legendre = np.vectorize(_get_legendre)
+    pass
+
+#@jit #(cache=True,nogil=True,nopython=True) 
+#(array(float64, 2d, C) x 2)(uint8,uint8,float64,bool)

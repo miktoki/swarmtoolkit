@@ -382,3 +382,12 @@ def debug_info(activate=1):
   else:
     logger.setLevel(logging.INFO)
 
+class _Conditional_decorator:
+    def __init__(self, dec, condition):
+        self.decorator = dec
+        self.condition = condition
+
+    def __call__(self, func):
+        if not self.condition:
+            return func
+        return self.decorator(func)

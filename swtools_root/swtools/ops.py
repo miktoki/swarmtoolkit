@@ -589,6 +589,8 @@ def shift_param(p1,p2,t1,t2,delta_t=0,dt_lim=(-20,20),v=1,spline_points=1e7,eval
       chisq=ne.evaluate('sum((p2_slice-p1_fit)**2)')
       last_vars[:]=dt_candidate,chisq
       return chisq
+    
+    
     m = Minuit(p_chisq_r,
         dt_candidate=delta_t,
         limit_dt_candidate=dt_lim,
@@ -949,3 +951,4 @@ def where_diff(values,atol=None,rtol=None,pdiff=[75,25],axis=0,no_jump=False):
     return np.where(val_diff <= diff)  
   else:
     return np.where(val_diff > diff)   
+
