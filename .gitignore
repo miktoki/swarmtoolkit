@@ -5,5 +5,6 @@
 *.zip
 *.swp
 
+zip_module.py
 .ipynb_checkpoints
 __pycache__
