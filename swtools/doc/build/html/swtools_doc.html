@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Documentation &mdash; swtools 1.0.0 documentation</title>
+    <title>Documentation &mdash; swtools 1.1.0 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.0.0',
+        VERSION:     '1.1.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="swtools 1.0.0 documentation" href="index.html" />
+    <link rel="top" title="swtools 1.1.0 documentation" href="index.html" />
     <link rel="next" title="Installation requirements" href="install.html" />
     <link rel="prev" title="swtools index" href="index.html" />
    
@@ -122,7 +122,7 @@ interactive specification, if not already downloaded to given location.</p>
 ftp server username</li>
 <li><strong>pw</strong> (<em>str</em>) &#8211;
 ftp server password</li>
-<li><strong>dlloc</strong> (<em>str</em>) &#8211;
+<li><strong>dst</strong> (<em>str</em>) &#8211;
 location to download to</li>
 <li><strong>cdfsuffix</strong> &#8211;
 see <a class="reference internal" href="#getcdfparamlist">getCDFparamlist</a></li>
@@ -208,18 +208,20 @@ if unable to decode any cdf file specified</p>
 
 <dl class="function">
 <dt id="swtools.getCDFlist">
-<code class="descclassname">swtools.</code><code class="descname">getCDFlist</code><span class="sig-paren">(</span><em>inloc=None</em>, <em>outloc='.'</em>, <em>sort_by_t=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.getCDFlist" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">swtools.</code><code class="descname">getCDFlist</code><span class="sig-paren">(</span><em>src=None</em>, <em>dst='.'</em>, <em>sort_by_t=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.getCDFlist" title="Permalink to this definition">¶</a></dt>
 <dd><p id="getcdflist">Get a list of cdf&#8217;s from a given location if zip or cdf.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>inloc</strong> (<em>str, optional</em>) &#8211; Path or url of filename(s) or filename directory used to search
-for cdf file (default <code class="docutils literal"><span class="pre">None</span></code>).</li>
-<li><strong>outloc</strong> (<em>str, optional</em>) &#8211; Directory path of output files if input includes zip files or
-remote files. If directory does not exist it will be created
-(default <code class="docutils literal"><span class="pre">os.curdir</span></code>).</li>
+<li><strong>src</strong> (<em>str, optional</em>) &#8211; Path or url of filename(s) or filename directory used to search
+for cdf file. If set to <code class="docutils literal"><span class="pre">None</span></code>, use current directory
+(default <code class="docutils literal"><span class="pre">None</span></code>).</li>
+<li><strong>dst</strong> (<em>str, optional</em>) &#8211; Directory path of output files if input includes zip files or
+remote files. If directory does not exist it will be created.
+If set to <code class="docutils literal"><span class="pre">None</span></code> use same location as src
+(default <code class="docutils literal"><span class="pre">None</span></code>).</li>
 <li><strong>sort_by_t</strong> (<em>bool, optional</em>) &#8211; Sort cdf filelist by start time of product (requires filenames
 to follow standard ESA Swarm naming convention)
 (default <code class="docutils literal"><span class="pre">False</span></code>).</li>
@@ -269,7 +271,7 @@ see <a class="reference internal" href="#getcdfparams">getCDFparams</a> .</li>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>cdfl</strong> &#8211;
-list of strings of absolute paths to cdf files found in <cite>inloc</cite>.</p>
+list of strings of absolute paths to cdf files found in <cite>src</cite>.</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/library/functions.html#list" title="(in Python v2.7)">list</a></p>
@@ -278,7 +280,7 @@ list of strings of absolute paths to cdf files found in <cite>inloc</cite>.</p>
 </tbody>
 </table>
 <p class="rubric">Notes</p>
-<p>The <cite>inloc</cite> argument will be overwritten by any <cite>inloc</cite> entry in
+<p>The <cite>src</cite> argument will be overwritten by any <cite>src</cite> entry in
 <cite>kwargs</cite>.</p>
 <p>If <cite>start_t</cite>. <cite>end_t</cite> and <cite>duration</cite> are all specified, <cite>duration</cite>
 will be ignored.</p>
@@ -286,7 +288,7 @@ will be ignored.</p>
 
 <dl class="function">
 <dt id="swtools.getCDFparamlist">
-<code class="descclassname">swtools.</code><code class="descname">getCDFparamlist</code><span class="sig-paren">(</span><em>cdflist, cdfsuffix=['DBL', 'CDF']</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.getCDFparamlist" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">swtools.</code><code class="descname">getCDFparamlist</code><span class="sig-paren">(</span><em>cdflist, cdfsuffix=['DBL', 'CDF'], unzip=False</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.getCDFparamlist" title="Permalink to this definition">¶</a></dt>
 <dd><p id="getcdfparamlist">List parameters in the given files if unique.</p>
 <p>Prints a list of parameters for each unique product type based on
 filename, and returns a list with corresponding information.</p>
@@ -295,10 +297,12 @@ filename, and returns a list with corresponding information.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>cdflist</strong> (<em>str or list of str</em>) &#8211; Path(s) of cdf file(s).</li>
+<li><strong>cdflist</strong> (<em>str or list of str</em>) &#8211; Path(s) of cdf file(s). If the only input path is a directory,
+its content will be explored.</li>
 <li><strong>cdfsuffix</strong> (<em>str or list of str, optional</em>) &#8211; case-insensitive list of strings of file extensions to accept
 as valid cdf files. If none found, zip files will be explored
 for the same file suffixes (default <code class="docutils literal"><span class="pre">['DBL','CDF']</span></code>).</li>
+<li><strong>unzip</strong> (<em>bool, optional</em>) &#8211; unzip any zip file in <cite>cdflist</cite> (default <code class="docutils literal"><span class="pre">False</span></code>).</li>
 </ul>
 </td>
 </tr>
@@ -312,7 +316,7 @@ if unable to decode any cdf file specified.</p>
 
 <dl class="function">
 <dt id="swtools.getCDFparams">
-<code class="descclassname">swtools.</code><code class="descname">getCDFparams</code><span class="sig-paren">(</span><em>inloc</em>, <em>*params</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.getCDFparams" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">swtools.</code><code class="descname">getCDFparams</code><span class="sig-paren">(</span><em>src</em>, <em>*params</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#swtools.getCDFparams" title="Permalink to this definition">¶</a></dt>
 <dd><p id="getcdfparams">Extract parameters from cdf input as a list.</p>
 <p>See <a class="reference internal" href="#getcdflist">getCDFlist</a> for a list of keyword arguments not specified here.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -320,9 +324,9 @@ if unable to decode any cdf file specified.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>inloc</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path or url of filename(s) or filename directory used to search for
+<li><strong>src</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Path or url of filename(s) or filename directory used to search for
 cdf file.</li>
-<li><strong>params</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Names of parameters to be extracted from <cite>inloc</cite>. If names are not
+<li><strong>params</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; Names of parameters to be extracted from <cite>src</cite>. If names are not
 known, parameters within cdf files may be shown using
 <a class="reference internal" href="#getcdfparamlist">getCDFparamlist</a>. Multiple parameters should be given as
 separate, comma-separated strings.</li>
@@ -331,9 +335,10 @@ separate, comma-separated strings.</li>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&nbsp;</td><td class="field-body"><p class="first"><strong>param0</strong> (<em>str</em>) &#8211;
-specify parameter name to use for filtering of files. If none
+specify case-insensitive parameter name to use for filtering of files. If none
 specified first parameter in <cite>params</cite> is assumed. Will not be
-used unless <code class="docutils literal"><span class="pre">filter_param=True</span></code> is specified.</p>
+used unless <code class="docutils literal"><span class="pre">filter_param=True</span></code> is specified. Only supports values included
+in the dictionary <code class="docutils literal"><span class="pre">swtools.aux.PRODUCT_DIC</span></code>.</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><a class="reference internal" href="#parameter">Parameter</a>&#8216;s as ordered in <cite>params</cite>. If only one parameter is
@@ -367,7 +372,8 @@ if no parameters specified</p>
 <ul class="simple">
 <li>cdf input or <a class="reference internal" href="#parameter">Parameter</a> only: parameter name and units</li>
 <li>1D-array only :  first and last <cite>n_show</cite> values</li>
-<li>all : shape, max, min, mean and median values.
+<li>all : shape, max, min, mean, median and population
+standard deviation values.
 number of zeros, NaN&#8217;s, and largest jumps along given axis</li>
 </ul>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1047,13 +1053,11 @@ x-axis with datetimes better than the default behaviour in matplotlib.</p>
 (default <code class="docutils literal"><span class="pre">False</span></code>).</li>
 <li><strong>lbox</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; box legends in semi-transparent box (default <code class="docutils literal"><span class="pre">False</span></code>)</li>
 <li><strong>lfontsize</strong> (<em>scalar</em>) &#8211; fontsize of legend (default <code class="docutils literal"><span class="pre">15</span></code>)</li>
-<li><strong>colors</strong> (<em>list_like, optional</em>) &#8211; <dl class="docutils">
-<dt>Color cycle to use in plot (see <a href="#id1"><span class="problematic" id="id2">`</span></a>matplotlib.colors</dt>
-<dd>&lt;<a class="reference external" href="http://matplotlib.org/api/colors_api.html">http://matplotlib.org/api/colors_api.html</a>&gt;`_). Default will use
-colormap set in the rcParams</dd>
-</dl>
-<p>(default <code class="docutils literal"><span class="pre">[]</span></code>).</p>
-</li>
+<li><strong>colors</strong> (<em>list_like, optional</em>) &#8211; Color cycle to use in plot (eg. <code class="docutils literal"><span class="pre">['r','g','b']</span></code> will show plots
+in red, green and blue (see
+<a class="reference external" href="http://matplotlib.org/api/colors_api.html">matplotlib.colors</a>
+for more examples). Default will use colormap set in the rcParams.
+(default <code class="docutils literal"><span class="pre">[]</span></code>).</li>
 <li><strong>plotkwargs</strong> (<em>optional</em>) &#8211; Additional keyword arguments to pass on to
 <a class="reference external" href="http://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.plot">matplotlib.pyplot.plot</a>, these will be overwritten if conflicting
 with other values.</li>
@@ -1092,7 +1096,7 @@ instances for plot</p>
 <li><strong>ptype</strong> (<code class="docutils literal"><span class="pre">{'scatter'|'colormesh'|'contour'}</span></code>, optional) &#8211; Set plot type (default <code class="docutils literal"><span class="pre">'scatter'</span></code>).</li>
 <li><strong>figsize</strong> (<em>tuple, optional</em>) &#8211; Size of figure as tuple of width and height in inches
 (default <code class="docutils literal"><span class="pre">matplotlib.pyplot.rcParams[&quot;figure.figsize&quot;]</span></code>).</li>
-<li><strong>cmap</strong> (<em>matplotlib.colors.ColorMap</em>) &#8211; colormap to be used in plot
+<li><strong>cmap</strong> (<em>matplotlib.colors.ColorMap or str</em>) &#8211; (Name of) colormap to be used in plot
 (default <code class="docutils literal"><span class="pre">matplotlib.pyplot.rcParams[&quot;image.cmap&quot;]</span></code>).</li>
 <li><strong>cbar</strong> (<em>bool, optional</em>) &#8211; use colorbar (default <code class="docutils literal"><span class="pre">True</span></code>).</li>
 <li><strong>dark_map</strong> (<em>bool, optional</em>) &#8211; draw map with darker tones of gray (default <code class="docutils literal"><span class="pre">False</span></code>).</li>
@@ -1246,12 +1250,11 @@ Should be used in conjunction with another plot function
 <li><strong>lfontsize</strong> (<em>scalar</em>) &#8211; fontsize of legend (default <code class="docutils literal"><span class="pre">15</span></code>)</li>
 <li><strong>ax</strong> (<a class="reference external" href="http://matplotlib.org/api/axes_api.html#matplotlib.axes.Axes" title="(in Matplotlib v1.5.1)"><em>matplotlib.axes.Axes</em></a>) &#8211; Axes instance of plot to share x-axis with. If <code class="docutils literal"><span class="pre">`ax=None`</span></code>, get
 current Axes instance (default None).</li>
-<li><strong>colors</strong> (<em>list_like, optional</em>) &#8211; <dl class="docutils">
-<dt>Color cycle to use in plot (see <a href="#id3"><span class="problematic" id="id4">`</span></a>matplotlib.colors</dt>
-<dd>&lt;<a class="reference external" href="http://matplotlib.org/api/colors_api.html">http://matplotlib.org/api/colors_api.html</a>&gt;`_). Default will use
-colormap set in the rcParams</dd>
-</dl>
-<p>(default <code class="docutils literal"><span class="pre">[]</span></code>).</p>
+<li><strong>colors</strong> (<em>list_like, optional</em>) &#8211; <p>Color cycle to use in plot (eg. <code class="docutils literal"><span class="pre">['r','g','b']</span></code> will show plots
+in red, green and blue (see
+<a class="reference external" href="http://matplotlib.org/api/colors_api.html">matplotlib.colors</a>
+for more examples). Default will use colormap set in the rcParams.
+(default <code class="docutils literal"><span class="pre">[]</span></code>).</p>
 </li>
 <li><strong>plotkwargs</strong> (<em>optional</em>) &#8211; Additional keyword arguments to pass on to
 <a class="reference external" href="http://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.plot">matplotlib.pyplot.plot</a>, these will be overwritten if conflicting
@@ -1274,13 +1277,27 @@ with other values.</li>
 </dd></dl>
 
 </div>
+<div class="section" id="keyword-arguments-hierachy">
+<h1>Keyword arguments hierachy:<a class="headerlink" href="#keyword-arguments-hierachy" title="Permalink to this headline">¶</a></h1>
+<p>Several key functions in <cite>swtools</cite> pass on keyword arguments to functions they call under the hood. Below is an overview to help keep track of this:</p>
+<blockquote>
+<div><p><a class="reference internal" href="#getcdfparams">getCDFparams</a>  -&gt; <a class="reference internal" href="#getcdflist">getCDFlist</a>  -&gt; <a class="reference internal" href="#dl-ftp">dl_ftp</a></p>
+<p><a class="reference internal" href="#getcdfparams">getCDFparams</a>  -&gt; <a class="reference internal" href="#extract-parameter">extract_parameter</a>  -&gt; <a class="reference internal" href="#concatenate-values">concatenate_values</a></p>
+</div></blockquote>
+</div>
 
 
           </div>
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper"><div class="relations">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Documentation</a></li>
+<li><a class="reference internal" href="#keyword-arguments-hierachy">Keyword arguments hierachy:</a></li>
+</ul>
+<div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
@@ -1314,7 +1331,7 @@ with other values.</li>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2016, Mikael Toresen.
+      &copy;2015, European Space Agency .
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.5</a>

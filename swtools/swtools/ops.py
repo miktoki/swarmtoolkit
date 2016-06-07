@@ -489,10 +489,11 @@ def shift_param(p1,p2,t1,t2,delta_t=0,dt_lim=(-20,20),v=1,spline_points=1e7,eval
           .format(eval_width))
         if eval_width<1:
           aux.logger.error(
-            '\n\t'.join(('too few evaluation points. Consider reducing'+\
-              ' spline_points or the span of dt_lim.',
-              'Number of  spline points: {}'.format(l_spl),
-              'dt_lim: {}'.format(dt_lim))))
+            '\n\t'.join((
+              'too few evaluation points. Consider reducing'+\
+              ' spline_points or the span of dt_lim.'),
+              'Number of  spline points: {}'.format(l_spl)+\
+              'dt_lim: {}'.format(dt_lim)))
           is_valid=False
           if aux._is_interactive():
             print("Insert new values"+\
@@ -616,8 +617,8 @@ def shift_param(p1,p2,t1,t2,delta_t=0,dt_lim=(-20,20),v=1,spline_points=1e7,eval
         tries+=1
         mout=m.migrad(ncall=imincall)
         aux.logger.debug(
-          'migrad did not converge; retrying. last vars:"+\
-          " delta_t={:.4f} chisq:{}'.format(*last_vars))
+          "migrad did not converge; retrying. last vars:"+\
+          " delta_t={:.4f} chisq:{}".format(*last_vars))
         if tries==MAXTRIES:
           raise ValueError('Maximum number of tries reached')
     except ValueError: 
@@ -650,12 +651,12 @@ def shift_param(p1,p2,t1,t2,delta_t=0,dt_lim=(-20,20),v=1,spline_points=1e7,eval
           .format(mout)) 
     elif mout['at_lower_limit']:
       aux.logger.info(
-        'delta_t converged to solution near lower limit, consider rerunning"+\
-        " with new limits')
+        "delta_t converged to solution near lower limit, consider rerunning"+\
+        " with new limits")
     elif mout['at_upper_limit']:
       aux.logger.info(
-        'delta_t converged to solution near upper limit, consider rerunning"+\
-        " with new limits')
+        "delta_t converged to solution near upper limit, consider rerunning"+\
+        " with new limits")
     if v:
       aux.logger.info('output delta_t: {}'.format(delta_t))
     

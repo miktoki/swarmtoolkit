@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/TeX Live for SUSE Linux) (format=pdflatex 2015.9.23)  11 MAY 2016 15:10
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/TeX Live for SUSE Linux) (format=pdflatex 2015.9.23)  7 JUN 2016 15:09
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -973,150 +973,140 @@ LaTeX Font Info:    Font shape `T1/pcr/m/it' in size <10> not available
 (Font)              Font shape `T1/pcr/m/sl' tried instead on input line 191.
  [2]
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <9> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 427.
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 429.
  [3] [4] [5] [6]
-Underfull \hbox (badness 10000) in paragraph at lines 813--813
+Underfull \hbox (badness 10000) in paragraph at lines 821--821
 \T1/ptm/m/it/10 eval_width=None\T1/ptm/m/n/10 , \T1/ptm/m/it/10 k=3\T1/ptm/m/n/
 10 , \T1/ptm/m/it/10 auto=False\T1/ptm/m/n/10 , \T1/ptm/m/it/10 usemi-nos=True\
 T1/ptm/m/n/10 , \T1/ptm/m/it/10 im-in-call=10000.0\T1/ptm/m/n/10 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 841--848
+Underfull \hbox (badness 10000) in paragraph at lines 849--856
 []\T1/pcr/b/n/10 dt_lim \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 int/float list_like of 
 length 2 or int/float.\T1/ptm/m/n/10 )
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 841--848
+Underfull \hbox (badness 10000) in paragraph at lines 849--856
 \T1/ptm/m/n/10 -- Max-i-mum and min-i-mum value of \T1/ptm/m/it/10 delta_t \T1/
 ptm/m/n/10 in sec-onds al-lowed for min-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 841--848
+Underfull \hbox (badness 10000) in paragraph at lines 849--856
 \T1/ptm/m/n/10 i-miz-ing al-go-rithm. If \T1/ptm/m/it/10 dt_lim \T1/ptm/m/n/10 
 is a num-ber, sym-me-try round \T1/ptm/m/it/10 delta_t
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 841--848
+Underfull \hbox (badness 10000) in paragraph at lines 849--856
 \T1/ptm/m/n/10 will be as-sumed, eg \T1/pcr/m/n/10 [delta_t-dt_lim,delta_t+dt_l
 im]\T1/ptm/m/n/10 . \T1/ptm/m/it/10 int
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 841--848
+Underfull \hbox (badness 10000) in paragraph at lines 849--856
 \T1/ptm/m/n/10 or \T1/ptm/m/it/10 float \T1/ptm/m/n/10 must be non-negative. If
  \T1/pcr/m/n/10 dt_lim = None \T1/ptm/m/n/10 it will be set
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 841--848
+Underfull \hbox (badness 10000) in paragraph at lines 849--856
 \T1/ptm/m/n/10 to \T1/pcr/m/n/10 dt_lim=(delta_t - ((1-eval_ratio)/2)*abs(delta
 _t),
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 841--848
+Underfull \hbox (badness 10000) in paragraph at lines 849--856
 \T1/pcr/m/n/10 delta_t + ((1-eval_ratio)/2)*abs(delta_t))\T1/ptm/m/n/10 , where
 
  []
 
 [7] [8]
-Overfull \hbox (72.1328pt too wide) in paragraph at lines 987--989
+Overfull \hbox (72.1328pt too wide) in paragraph at lines 995--997
 []\T1/ptm/m/n/10 This is es-sen-tially a con-ve-nience func-tion to ac-cess \T1
 /pcr/m/n/10 spacepy.toolbox.tOverlap(t1+delta_t,t2,presort=True)\T1/ptm/m/n/10 
 . 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1003--1004
+Underfull \hbox (badness 10000) in paragraph at lines 1011--1012
 []\T1/pcr/b/n/10 dt_t \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 float, datetime.timedelta
  or numpy.ndarray of
  []
 
 [9] [10]
-Underfull \hbox (badness 10000) in paragraph at lines 1222--1225
+Underfull \hbox (badness 10000) in paragraph at lines 1230--1233
 []\T1/pcr/b/n/10 t_out \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 datetime.datetime, scala
 r or datetime/scalar list,
  []
 
 [11] [12]
-Underfull \hbox (badness 10000) in paragraph at lines 1401--1403
+Underfull \hbox (badness 10000) in paragraph at lines 1409--1411
 []\T1/pcr/b/n/10 fmt_t \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 bool, optional\T1/ptm/m/
 n/10 ) -- For-mat date-time x-ticks (see [][]mat-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1405--1407
+Underfull \hbox (badness 10000) in paragraph at lines 1413--1415
 []\T1/pcr/b/n/10 figsize \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 tuple of length 2, opt
 ional\T1/ptm/m/n/10 ) -- Size of
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1405--1407
+Underfull \hbox (badness 10000) in paragraph at lines 1413--1415
 \T1/ptm/m/n/10 fig-ure as tu-ple of width and height in inches (de-fault
  []
 
 
-Overfull \hbox (27.73006pt too wide) in paragraph at lines 1443--1446
-[]\T1/ptm/m/n/10 <[][]http://matplotlib.org/api/colors_api.html[][]>`_).
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 1483--1483
+Underfull \hbox (badness 10000) in paragraph at lines 1487--1487
 \T1/ptm/m/it/10 dark_map=False, show=False, con-tourlevels=15, log_contour=Fals
 e,
  []
 
 [13] [14]
-Underfull \hbox (badness 10000) in paragraph at lines 1619--1621
+Underfull \hbox (badness 10000) in paragraph at lines 1623--1625
 []\T1/pcr/b/n/10 fmt_t \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 bool, optional\T1/ptm/m/
 n/10 ) -- For-mat date-time x-ticks (see [][]mat-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1623--1625
+Underfull \hbox (badness 10000) in paragraph at lines 1627--1629
 []\T1/pcr/b/n/10 figsize \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 tuple of length 2, opt
 ional\T1/ptm/m/n/10 ) -- Size of
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1623--1625
+Underfull \hbox (badness 10000) in paragraph at lines 1627--1629
 \T1/ptm/m/n/10 fig-ure as tu-ple of width and height in inches (de-fault
  []
 
-[15]
-Overfull \hbox (27.73006pt too wide) in paragraph at lines 1729--1732
-[]\T1/ptm/m/n/10 <[][]http://matplotlib.org/api/colors_api.html[][]>`_).
- []
-
-[16] (./swtools_doc.ind [17]
+[15] [16] (./swtools_doc.ind [17]
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <10> not available
 (Font)              Font shape `T1/phv/b/n' tried instead on input line 68.
  [18
 
 ])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1830.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 1830.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1843.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1843.
  (./swtools_doc.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1830.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1830.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1843.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1843.
 
 Package rerunfilecheck Info: File `swtools_doc.out' has not changed.
-(rerunfilecheck)             Checksum: B34AA6049CE584D5F5646BB4C33A24F4;231.
+(rerunfilecheck)             Checksum: BD5540C9D91AFDBDE7C41F01D000691C;296.
 
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1830.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1843.
  ) 
 Here is how much of TeX's memory you used:
- 9499 strings out of 493315
- 130928 string characters out of 6145893
- 233215 words of memory out of 5000000
- 12589 multiletter control sequences out of 15000+600000
+ 9502 strings out of 493315
+ 130992 string characters out of 6145893
+ 233276 words of memory out of 5000000
+ 12591 multiletter control sequences out of 15000+600000
  49872 words of font info for 66 fonts, out of 8000000 for 9000
  958 hyphenation exceptions out of 8191
  36i,11n,45p,524b,585s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -1130,10 +1120,10 @@ urw/helvetic/uhvb8a.pfb></usr/share/texmf/fonts/type1/urw/helvetic/uhvbo8a.pfb>
 </usr/share/texmf/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/share/texmf/fonts/t
 ype1/urw/times/utmb8a.pfb></usr/share/texmf/fonts/type1/urw/times/utmr8a.pfb></
 usr/share/texmf/fonts/type1/urw/times/utmri8a.pfb>
-Output written on swtools_doc.pdf (18 pages, 194580 bytes).
+Output written on swtools_doc.pdf (18 pages, 196418 bytes).
 PDF statistics:
- 382 PDF objects out of 1000 (max. 8388607)
- 343 compressed objects within 4 object streams
- 87 named destinations out of 1000 (max. 500000)
- 49 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 393 PDF objects out of 1000 (max. 8388607)
+ 354 compressed objects within 4 object streams
+ 88 named destinations out of 1000 (max. 500000)
+ 57 words of extra memory for PDF output out of 10000 (max. 10000000)
 

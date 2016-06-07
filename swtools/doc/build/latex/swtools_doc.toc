@@ -9,7 +9,8 @@
 \contentsline {paragraph}{Notes}{10}{paragraph*.44}
 \contentsline {paragraph}{Notes}{12}{paragraph*.49}
 \contentsline {paragraph}{Notes}{14}{paragraph*.54}
-\contentsline {section}{\numberline {2}Installation requirements}{16}{section.2}
-\contentsline {section}{\numberline {3}Test}{17}{section.3}
-\contentsline {section}{\numberline {4}Remarks}{17}{section.4}
+\contentsline {section}{\numberline {2}Keyword arguments hierachy:}{16}{section.2}
+\contentsline {section}{\numberline {3}Installation requirements}{16}{section.3}
+\contentsline {section}{\numberline {4}Testing}{17}{section.4}
+\contentsline {section}{\numberline {5}Remarks}{17}{section.5}
 \contentsline {section}{Index}{18}{section*.58}

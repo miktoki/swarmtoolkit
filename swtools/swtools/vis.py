@@ -37,7 +37,7 @@ def plot_basic(x,y,*xy,show=False,fmt_t=True,figsize=plt.rcParams["figure.figsiz
   show : bool, optional
     Show plot (default ``False``).
   fmt_t : bool, optional
-    Format datetime x-ticks (see `matplotlib.figure.autofmt_xdate 
+    Format datetime x-ticks (see `matplotlib.figure.autofmt_xdate
       <http://matplotlib.org/api/figure_api.html?highlight=autofmt_xdate>`_)
       (default ``True``).
   figsize : tuple of length 2, optional
@@ -70,9 +70,10 @@ def plot_basic(x,y,*xy,show=False,fmt_t=True,figsize=plt.rcParams["figure.figsiz
   lfontsize : scalar
     fontsize of legend (default ``15``)
   colors : list_like, optional
-    Color cycle to use in plot (see `matplotlib.colors 
-      <http://matplotlib.org/api/colors_api.html>`_). Default will use
-      colormap set in the rcParams
+    Color cycle to use in plot (eg. ``['r','g','b']`` will show plots 
+    in red, green and blue (see 
+    `matplotlib.colors <http://matplotlib.org/api/colors_api.html>`_ 
+    for more examples). Default will use colormap set in the rcParams.
     (default ``[]``).    
   plotkwargs : optional
     Additional keyword arguments to pass on to 
@@ -175,9 +176,10 @@ def plot_twinx(x,y,*xy,show=False,logy=False,legends=[],lloc='best',lall=True,lb
     Axes instance of plot to share x-axis with. If ```ax=None```, get 
     current Axes instance (default None). 
   colors : list_like, optional
-    Color cycle to use in plot (see `matplotlib.colors 
-      <http://matplotlib.org/api/colors_api.html>`_). Default will use
-      colormap set in the rcParams
+    Color cycle to use in plot (eg. ``['r','g','b']`` will show plots 
+    in red, green and blue (see 
+    `matplotlib.colors <http://matplotlib.org/api/colors_api.html>`_ 
+    for more examples). Default will use colormap set in the rcParams.
     (default ``[]``).    
   plotkwargs : optional
     Additional keyword arguments to pass on to 
@@ -337,8 +339,8 @@ def plot_geo(lon,lat,param,ptype='scatter',figsize=plt.rcParams["figure.figsize"
   figsize : tuple, optional
     Size of figure as tuple of width and height in inches 
     (default ``matplotlib.pyplot.rcParams["figure.figsize"]``).
-  cmap : matplotlib.colors.ColorMap
-    colormap to be used in plot 
+  cmap : matplotlib.colors.ColorMap or str
+    (Name of) colormap to be used in plot 
     (default ``matplotlib.pyplot.rcParams["image.cmap"]``).
   cbar : bool, optional
     use colorbar (default ``True``).
