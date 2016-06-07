@@ -1,0 +1,6 @@
+Changelog v.1.1:
+
+- fix bug where filtering of files did not work properly in dl_ftp
+- added optional keyword argument `unzip` to getCDFparamlist
+- keyword argument `inloc` changed to `src`; keyword arguments `outloc` and `dlloc` changed to `dst`
+- improved documentation
