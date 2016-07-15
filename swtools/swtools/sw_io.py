@@ -43,7 +43,7 @@ def getCDFparams(src,*params,**kwargs):
     cdf file. 
   params : str 
     Names of parameters to be extracted from `src`. If names are not
-    known, parameters within cdf files may be shown using 
+    known, parameters within cdf files may be accessed using 
     `getCDFparamlist`_. Multiple parameters should be given as 
     separate, comma-separated strings.
   
@@ -321,7 +321,7 @@ def getCDFlist(src=None, dst=os.curdir,sort_by_t=False, **kwargs):
   return cdflist
 
 
-def getCDFparamlist(cdflist,cdfsuffix=['DBL','CDF'],unzip=False):
+def getCDFparamlist(cdflist,cdfsuffix=['DBL','CDF'],unzip=False,verbose=True):
     """
     .. _getCDFparamlist:
     
@@ -341,10 +341,19 @@ def getCDFparamlist(cdflist,cdfsuffix=['DBL','CDF'],unzip=False):
         for the same file suffixes (default ``['DBL','CDF']``).
     unzip : bool, optional
         unzip any zip file in `cdflist` (default ``False``).
+    
+    Returns
+    -------
+      dict or list
+        dictionary of product parameter lists. If only one product
+        type is found, only a list of parameters is returned.
+
+
     Raises
     ------
       CDFError
         if unable to decode any cdf file specified.
+
     """
     zp = {'temp':False,'cdfsuffix':cdfsuffix}
     cdflist=aux._tolist(cdflist)
@@ -366,7 +375,7 @@ def getCDFparamlist(cdflist,cdfsuffix=['DBL','CDF'],unzip=False):
           cdflist.append(_get_zip_content(cdflist.pop(i),**zp))
 
     aux.logger.debug("CDF files:\n\t{}".format('\n\t'.join(cdflist)))
-    products_listed=[]
+    products_listed={}
     for f in cdflist:
         try:
             cdf = pycdf.CDF(f)
@@ -376,11 +385,102 @@ def getCDFparamlist(cdflist,cdfsuffix=['DBL','CDF'],unzip=False):
         else:
             prod=_info_from_filename(f,'product')
             if prod not in products_listed:
-              aux.logger.info("\nList of parameters for file '{}':\n\t{}"
+              if verbose:
+                aux.logger.info(
+                  "\nList of parameters for file '{}':\n\t{}"
                   .format(os.path.basename(f),'\n\t'
                   .join(map(lambda x:x[0],cdf.items()))))
-              products_listed.append(prod)
+              products_listed[prod]=[k for k in cdf.items()]
+    return aux._single_item_list_open(products_listed)
 
+
+def getCDFattr(fn,*params,verbose=True,shape=True,fileattr=True):
+  """
+  .. _getCDFattr:
+
+  Get file and/or parameter attributes of cdf file as a dictionary
+
+  Extract meta-data contained in the cdf file about the file itself 
+  and the parameters contained as a nested dictionary.
+
+  Parameters
+  ----------
+
+  fn : str
+    Path of cdf file
+  params : str
+    Names of parameters to be extracted from `fn`. If names are not
+    known, parameters within cdf files may be accessed using 
+    `getCDFparamlist`_. Multiple parameters should be given as 
+    separate, comma-separated strings. If no parameters are provided,
+    all will be retrieved.
+
+  Keyword Arguments
+  -----------------
+      verbose : bool
+        Print attributes to stdout (default ``True``)
+      shape : bool
+        Add shape of parameter as parameter attribute ``SHAPE`` 
+        (default ``True``)
+      fileattr : bool
+        Include file attributes (as ``FILE_ATTRIBUTES`) in output
+        (default ``True``)
+  
+  Returns
+  -------
+    dict
+      dictionary of parameter/file dictionaries of attributes.
+      If only one parameter is chosen and ``fileattr=False``, 
+      only a dictionary of attributes is returned.
+
+  Raises
+  ------
+    CDFError
+      if unable to decode any cdf file specified
+    KeyError
+      if unable to find any parameter provided in cdf
+  """
+
+  attr = {}
+  try:
+    cdf = pycdf.CDF(f)
+  except Exception:
+    aux.logger.error("Failed to decode cdf file '{}'".format(f))
+    raise
+  else:
+    if fileattr:
+      attr.update({"FILE_ATTRIBUTES":{k:str(v) for k,v in 
+        cdf.attrs.items()}})
+    if params is None:
+      for k,v in cdf.items():
+        attr[k] = dict(v.attrs)
+        if shape:
+          attr[k].update({"SHAPE":str(cdf[k])})
+    else:
+      for p in params:
+        try:
+          attr[p] = dict(cdf[p].attrs)
+          if shape:
+            attr[p].update({"SHAPE":str(cdf[p])})  
+        except Exception:
+          aux.logger.error("Unable to find parameter {} in {}".format(
+            p,fn))
+          raise KeyError
+    cdf.close()
+
+    if verbose:
+      s = 'Attributes of {}\n\n'.format(fn)
+      for k,v in sorted(d.items()):
+        s += "{}:\n".format(k)
+        if isinstance(v,dict):
+          for vk,vv in sorted(v.items()):
+            s += "\t{}:\n\t\t{}\n".format(vk,vv)
+        else:
+          s += "\t{}\n".format(v)
+      aux.logger.info(s)
+  #if len(attr)==1:
+  #  attr = attr[[next(iter(attr.keys()))]]
+  return aux._single_item_list_open(attr)
     
 def extract_parameter(cdflist, parameter,**kwargs):
     """
@@ -480,6 +580,7 @@ def extract_parameter(cdflist, parameter,**kwargs):
               if values[0]!=None:
                 values_container[prod].append(values)
                 unit=u
+            cdf.close()
       if not found:
         aux.logger.info(
           "Parameter '{}' not found in file(s): \n\t{}"
