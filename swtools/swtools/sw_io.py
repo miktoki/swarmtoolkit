@@ -45,7 +45,8 @@ def getCDFparams(src,*params,**kwargs):
     Names of parameters to be extracted from `src`. If names are not
     known, parameters within cdf files may be accessed using 
     `getCDFparamlist`_. Multiple parameters should be given as 
-    separate, comma-separated strings.
+    separate, comma-separated strings. If no parameters are provided,
+    all parameters from the first cdf found in `src` will be used
   
   Keyword Arguments
   -----------------
@@ -61,11 +62,6 @@ def getCDFparams(src,*params,**kwargs):
     `Parameter`_'s as ordered in `params`. If only one parameter is
     specified, `Parameter`_ will not be contained within a list. 
 
-  Raises
-  ------
-    ValueError
-      if no parameters specified
-
   Notes
   -----
     Other keyword arguments are passed on to `getCDFlist`_, 
@@ -76,21 +72,26 @@ def getCDFparams(src,*params,**kwargs):
   getCDFlist, extract_parameter, dl_ftp
   
   """
-  if not params:
-    aux.logger.error('No parameters specified to {}'
-      .format(getCDFparams.__name__))
-    raise ValueError
   if 'param0' not in kwargs:
-    kwargs['param0']=params[0]
+    if params:
+      kwargs['param0']=params[0]
+      aux.logger.debug("{} chosen as 'param0'".format(params[0]))
+    else:
+      kwargs['param0'] = None
   if 'filter_param' not in kwargs:
     kwargs['filter_param']=False
   kwargs['src']=src
+  cdflist=getCDFlist(**kwargs)
+  if not params:
+    if 'verbose' not in kwargs:
+      kwargs['verbose'] = False
+    params = getCDFparamlist(cdflist[0],**kwargs)
+  
   aux.logger.debug("getting cdf files from:\n\t{}"
     .format('\n\t'.join(aux._tolist(src))))
-  cdflist=getCDFlist(**kwargs)
   p_list=[]
-  for par in params:
-    if par and cdflist:
+  if cdflist:
+    for par in params:
       p_list.append(extract_parameter(cdflist,par,**kwargs))
 
   return aux._single_item_list_open(p_list)
@@ -226,7 +227,7 @@ def getCDFlist(src=None, dst=os.curdir,sort_by_t=False, **kwargs):
       os.makedirs(dst)
       aux.logger.debug("creating directory: '{}'".format(dst))
   
-  if src == None:
+  if src is None:
     src = os.curdir
   zp=dict(cdfsuffix=['DBL','CDF'],temp=False,use_ftp=False,includezip=False,
           src=src,dst=dst,filter_param=False,param0=None,sat=None,
@@ -576,8 +577,8 @@ def extract_parameter(cdflist, parameter,**kwargs):
                   "Found parameter '{}' in file '{}'"
                   .format(parameter, f))
                 values = cdf[parameter][...]
-            if values!=None:
-              if values[0]!=None:
+            if values is not None:
+              if values[0] is not None:
                 values_container[prod].append(values)
                 unit=u
             cdf.close()

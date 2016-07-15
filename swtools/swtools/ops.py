@@ -289,7 +289,7 @@ def shift_param(p1,p2,t1,t2,delta_t=0,dt_lim=(-20,20),v=1,spline_points=1e7,eval
       Maximum and minimum value of `delta_t` in seconds allowed for 
       minimizing algorithm. If `dt_lim` is a number, symmetry round
       `delta_t` will be assumed, eg ``[delta_t-dt_lim,delta_t+dt_lim]``.
-      `int` or `float` must be non-negative. If ``dt_lim = None`` it 
+      `int` or `float` must be non-negative. If ``dt_lim is None`` it 
       will be set to ``dt_lim=(delta_t - ((1-eval_ratio)/2)*abs(delta_t),
       delta_t + ((1-eval_ratio)/2)*abs(delta_t))``, where 
       ``eval_ratio=eval_width/len(p1)`` (default ``(-20,20)``). 
@@ -400,10 +400,10 @@ def shift_param(p1,p2,t1,t2,delta_t=0,dt_lim=(-20,20),v=1,spline_points=1e7,eval
       is_dt_dt=True
     
     no_dt=False
-    if delta_t==None:
+    if delta_t is None:
       no_dt=True
 
-    if eval_width!=None:
+    if eval_width is not None:
       if eval_width<=0 or eval_width>len2:
         aux.logger.error(
           "eval_width must be a positive integer less"+\
@@ -421,7 +421,7 @@ def shift_param(p1,p2,t1,t2,delta_t=0,dt_lim=(-20,20),v=1,spline_points=1e7,eval
         aux.logger.error("dt_lim needs to be of length 2")
         raise IndexError
       for i in range(2):
-        if dt_lim[i]==None:
+        if dt_lim[i] is None:
           if no_dt:
             aux.logger.error(
               "If no delta_t is provided dt_lim tuple must be provided") 
@@ -441,7 +441,7 @@ def shift_param(p1,p2,t1,t2,delta_t=0,dt_lim=(-20,20),v=1,spline_points=1e7,eval
               .format(dt_lim,(dt_low,dt_high)))
       dt_lim=(dt_low,dt_high)
     else:#assume number: max deviation from delta_t symmetrically
-      if dt_lim!=None:
+      if dt_lim is not None:
         if dt_lim<=0:
           aux.logger.error(
             "Float value dt_lim:{} out of bounds.".format(dt_lim)+\
@@ -665,7 +665,7 @@ def shift_param(p1,p2,t1,t2,delta_t=0,dt_lim=(-20,20),v=1,spline_points=1e7,eval
         mout=m.draw_profile('dt_candidate',bins=bins,bound=dt_lim)
       except ValueError:
         minuit_fail_warning()
-    if delta_t==None:
+    if delta_t is None:
       return
     if return_delta:
       p1,p2,t1,t2=_shift_param(p1,p2,t1,t2,delta_t)
