@@ -28,7 +28,9 @@ class test_CDF(unittest.TestCase):
         
         from spacepy import pycdf
         
-        self.path = os.path.split(os.path.abspath(__file__))[0]
+        self.path = os.path.split(os.path.relpath(__file__))[0]
+        if not self.path:
+          self.path = os.curdir
         for fn in os.listdir(self.path):
             if fn.endswith('.cdf') or fn.endswith('.ZIP') or fn.endswith('.DBL'):
     	        os.remove(fn)
@@ -52,7 +54,7 @@ class test_CDF(unittest.TestCase):
         self.r_u = 'm'
         self.n_u = '1/m^-3'
         self.t_u = ''
-        for i,fn in enumerate([self.fn1,self.fn2,self.fn3]):
+        for i,fn in enumerate((self.fn1,self.fn2,self.fn3)):
             cdf = pycdf.CDF(fn,'')
             cdf[self.tname] = self.timestamp
             cdf[self.rname] = self.radius
@@ -66,9 +68,10 @@ class test_CDF(unittest.TestCase):
         with zipfile.ZipFile(self.zn1, 'w') as myzip:
             myzip.write(self.fn3)
         os.remove(self.fn3)
+        print('REMOVE',self.fn3,os.path.isfile(self.fn3) )
         
     def tearDown(self):
-        for fn in [self.fn1,self.fn2,self.zn1]:
+        for fn in (self.fn1,self.fn2,self.zn1):
             os.remove(fn)
 
 
@@ -96,23 +99,27 @@ class test_CDF(unittest.TestCase):
         pass
 
     def test_getCDFlist(self):
-        flist1 = swtools.getCDFlist('.')
-        flistz = swtools.getCDFlist('.',includezip=True)
-        zlistz = swtools.getCDFlist('.',cdfsuffix=['DBL'],includezip=True)
-        flistd = swtools.getCDFlist('.',cdfsuffix=['DBL'])
-
-        assert len(flistz)==3,"len: {}".format(len(flistz))
-        assert len(zlistz)==2,"len: {}".format(len(zlistz))
-        assert len(flistd)==1,"len: {}".format(len(flistd))
+        flist1 = swtools.getCDFlist(self.path)
+        flist2 = swtools.getCDFlist(start_t='2015-07-18',end_t='2015-09-18')
+        flist3 = swtools.getCDFlist(start_t='20150716',duration=2)
+        flistd = swtools.getCDFlist(self.path,cdfsuffix=['DBL'])
+        
+        #note that these unzip the zip and have to be placed after the commands
+        #before to not influence them 
+        flistz = swtools.getCDFlist(self.path,includezip=True)
+        zlistz = swtools.getCDFlist(self.path,cdfsuffix=['DBL'],includezip=True)
+        
+        assert len(flistz)==3,"len: {},{}".format(len(flistz),flistz)
+        assert len(zlistz)==2,"len: {},{}".format(len(zlistz),zlistz)
+        assert len(flistd)==1,"len: {},{}".format(len(flistd),flistd)
 
         assert os.path.abspath(self.fn1) in flist1
         assert os.path.abspath(self.fn2) in flist1
         
-        flist2 = swtools.getCDFlist(start_t='2015-07-18',end_t='2015-09-18')
         assert len(flist2) == 1,"len: {}".format(len(flist2))
 
-        flist3 = swtools.getCDFlist(start_t='20150716',duration=2)
-        assert flist3 == flist1,"{}!={}".format(flist3,flist1)
+        assert flist3 == flist1,"{}!={},\nDifference:".format(
+            flist3,flist1,set(flist1).symmetric_difference(set(flist3)))
         pass
 
     def test_extract_parameter(self):
