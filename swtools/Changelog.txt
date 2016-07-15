@@ -1,4 +1,8 @@
-Changelog v.1.1:
+Changelog v 1.2
+
+
+
+Changelog v 1.1:
 
 - fix bug where filtering of files did not work properly in dl_ftp
 - added optional keyword argument `unzip` to getCDFparamlist

@@ -743,8 +743,9 @@ def fourier_transform(param,dt_t,norm=None):
 
 def cyclic2rising(a,lim=[-90,90]):
     """
-    Returns an array of monotonic rising values (requires first indices
-     to be rising, and assumes approx. equidistant points).
+    Return array with monotonic rising values, from array with cyclic 
+    values (requires first indices to be rising, and assumes approx. 
+    equidistant points).
 
     Parameters
     ----------
@@ -857,7 +858,7 @@ def rising2cyclic(a,lim=[-90,90]):
 
 def interpolate2d_sphere(lat_rad, lon_rad, param,**kwargs):
   """
-  Interpolate on sphere using radians
+  Interpolate on rectangular mesh on sphere using radians
   
   Convenience function to call `RectSphereBivariateSpline 
   <http://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.RectSphereBivariateSpline.html>`_
