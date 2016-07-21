@@ -8,32 +8,32 @@ from scipy.interpolate import splrep,splev
 from . import aux 
 
 __all__=[ 'get_Bnec',
+          'get_Bparameter',
+          'get_Bgradient',
+          'get_index',
           'get_l_maxmin',
           'read_shc']
 
 
-def _get_legendre(PdP, theta, schmidtnormalize, out):
+def _get_legendre(theta, nmax, mmax, schmidtnormalize=True):
     """Legendre functions and its derivatives
     
+      Thetha are colatitudes in radians
         The functions are computed iteratively, using an algorithm from 
         "Spacecraft Attitude Determination and Control" by James Richard Wertz
         (http://books.google.no/books?id=GtzzpUN8VEoC&lpg=PP1&pg=PA781#v=onepage)
     """
     
-    
     if hasattr(theta,'__len__'):
         theta = theta[0]
-        schmidtnormalize = schmidtnormalize[0]
-
-    shp = PdP.shape
-    nmax = shp[1]-1
-    mmax = shp[2]-1
-
+    
+    PdP = np.zeros((2,nmax+1,mmax+1))
     S = np.zeros((nmax+1,mmax+1))
 
     #shorthand notation
     c=np.cos(theta)
     s=np.sin(theta)
+    
     
     #Initialization
     S[0, 0] = 1.
@@ -45,19 +45,23 @@ def _get_legendre(PdP, theta, schmidtnormalize, out):
     PdP[1,1,0] -= s * PdP[0,0,0]
     S[1,0] = S[0,0]
     
+    
     #n=1,m=1
     if mmax:
       PdP[:, 1, 1]  = s * PdP[:,0,0]
       PdP[1, 1, 1] += c * PdP[0,0,0]
       S[1, 1] = S[1,0]
-            
+    
+    m_a = np.arange(1, mmax + 1)
+    
+                
     for n in range(2, nmax +1):
         #m=0
-        S[n, 0] = S[n - 1, 0] * (2.*n - 1)/n
+        S[n, 0] = S[n - 1, 0] * (2*n - 1)/n
         Knm = ((n - 1)**2) / ((2*n - 1)*(2*n - 3))
         #P[n,0]  = c * P[n-1,0] - Knm*P[n-2,0]
         #dP[n,0] = c * dP[n-1,0] - s * P[n-1,0] - Knm * dP[n-2,0]
-        PdP[:,n,0] = c *PdP[:,n-1,0] - Knm*PdP[:,n-2,0] 
+        PdP[:,n,0]  = c*PdP[:,n-1,0] - Knm*PdP[:,n-2,0] 
         PdP[1,n,0] -= s*PdP[0,n-1,0]
         #for m in range(1, min(n + 1, mmax + 1)):
         #    S[n, m] = S[n, m - 1] * \
@@ -69,26 +73,30 @@ def _get_legendre(PdP, theta, schmidtnormalize, out):
         #        Knm = ((n - 1)**2 - m**2) / ((2*n - 1)*(2*n - 3))
         #        PdP[:, n, m]  = c * PdP[:, n -1, m] - Knm*PdP[:, n - 2, m]
         #        PdP[1, n, m] -= s * PdP[0, n - 1, m]
-        m_arr = np.arange(1,min(n + 1, mmax + 1))
+        m = m_a[:min(n,mmax)]
+        #S[n,m] = np.where(n-m+1>0,S[n,0]*(np.sqrt((n - m + 1)*((m==1)+1)/(n+m))**m),0)
+        S[n,m] = S[n,0] * np.cumprod(np.sqrt((n - m + 1)*((m==1)+1)/(n+m)))
         
-        S[n,m_arr] = S[n,m_arr-1] * np.sqrt((n - m_arr + 1)*((m_arr==1)+1)/(n+m_arr))
-        Knm = ((n - 1)**2 - m_arr**2) / ((2*n - 1)*(2*n - 3))
-        PdP[:, n, m_arr]  = c * PdP[:, n -1, m_arr] - Knm*PdP[:, n - 2, m_arr]
-        PdP[1, n, m_arr] -= s * PdP[0, n - 1, m_arr]
-
+        #for i in range(len(m)):
+        #  S[n,m[i]] = S[n,m[i]-1] * _[i] 
+        #print(S[n,1:m[-1]+1].shape,_.shape,m.shape)
+        #=_
+        Knm = ((n - 1)**2 - m**2) / ((2*n - 1)*(2*n - 3))
+        PdP[:, n, m]  = c * PdP[:, n -1, m] - Knm*PdP[:, n - 2, m]
+        PdP[1, n, m] -= s * PdP[0, n - 1, m]
+        
         #overwrite for n==m
-        PdP[:, n, n]  = s * PdP[:, n - 1, n - 1]
-        PdP[1, n, n] += c * PdP[0, n - 1, n - 1]
-        
- 
-
+        if n in m:
+          PdP[:, n, n]  = s * PdP[:, n - 1, n - 1]
+          PdP[1, n, n] += c * PdP[0, n - 1, n - 1]
+        #print(PdP[0])
+    
     if schmidtnormalize:
         # now apply Schmidt normalization
         PdP *= S
     
-    out=PdP
+    return PdP
     
-
 
 #@jit#(cache=True) #uint8(uint32,uint8,uint8)
 def get_l_maxmin(arr_len,lmax=0,lmin=0,suppress=False):
@@ -103,6 +111,8 @@ def get_l_maxmin(arr_len,lmax=0,lmin=0,suppress=False):
   ``(lmax,lmin)`` pair. ``lmax`` and/or ``lmin`` may be set. If no pair
   is found, an error is raised.``suppress=True`` suppresses logger 
   output.
+
+  Assumes maximum order value is the same as maximum degree
   """
 
   if lmax<0:
@@ -226,17 +236,66 @@ def read_shc(shc_fn,cols='all'):
   # currently not passing on N_min,N_max,N_step
   return gh,spline_order,len(cols),times
 
-def get_ghi(l,m,l_low=1):
-    if abs(m)>l:
-        return -1
-    return l**2 + 2*abs(m) - 2 - (m>0) - l_low**2
 
-def _Bnec_core(gh,lmax,lmin,lat_rad,lon_rad,spline_order,r,dB,n_times,lmin_file=1):
+def get_index(l,m,lmin=1,mmax=-1):
+    """
+    Get index of a Gauss coefficient in an array, from degree and order
+
+    Order `m` needs to be less or equal to degree `l`.
+  
+    Parameters
+    ----------
+    l : int
+      Degree of coefficient
+    m : int
+      Order of coefficient
+    lmin : int, optional
+      Lower bound of `l` in array (default 1).
+    mmax : int, optional
+      Upper bound of `m` in array. If `mmax` less than 0, then it is 
+      assumed to only be restricted by `l` (default -1).
+
+    Returns
+    -------
+    int
+      Index of coefficent. If invalid input parameters are provided,
+      -1 will be returned.
+
+    Notes
+    -----
+    Index is given by:
+    .. math: 
+
+      l^2 - l_{\text{min}}^2 + 2|m|    , if m=0.
+      l^2 - l_{\text{min}}^2 + 2|m| - 1, if m>0. 
+
+    If mmax is set an additional term 
+    :math:`-(l-m_\text{max}+1)(l-m_\text{max}+2)` is added.
+
+    
+    """
+    idx = l**2 - lmin**2 + 2*abs(m) - (m>0)
+    
+    if abs(m)>l: 
+      return -1
+    elif mmax<0:
+      return idx
+    else:
+      if m>mmax: 
+        return -1
+      t = l-mmax-1
+      return idx + (t>0)*t*(t+1)
+      
+
+def _Bnec_core(gh,lmax,lmin,lat_rad,lon_rad,spline_order,r,dB,n_times,lmin_file=1,mmax=-1):
   """Compute magnetic field in North-East-Center reference system"""
   X,Y,Z=0,1,2
   llo,lla=len(lon_rad),len(lat_rad)
-  lo_a_cs=np.empty((lmax+1,2,llo))
-  for m in range(lmax+1):
+  if mmax<0:
+    mmax=lmax
+
+  lo_a_cs=np.empty((mmax+1,2,llo))
+  for m in range(mmax+1):
     lo_a_cs[m,0]=np.cos(m*lon_rad)
     lo_a_cs[m,1]=np.sin(m*lon_rad)
   
@@ -244,14 +303,10 @@ def _Bnec_core(gh,lmax,lmin,lat_rad,lon_rad,spline_order,r,dB,n_times,lmin_file=
   la_arr = np.arange(lla,dtype=np.uint16)
   t_arr = np.arange(n_times,dtype=np.uint16)
   l_arr = np.arange(lmin,lmax+1,dtype=np.uint16)
-  PdP = np.zeros((2,lmax+1,lmax+1),dtype=np.float32)
   #m arr goes from 1 to l
   
   for la in range(lla):#lat_rad loop
-    #_th = np.array((np.pi/2-lat_rad[la],),dtype=np.float32)
-    #_sn = np.array((True,),dtype=np.dtype(bool))
-    _get_legendre(PdP,np.pi/2-lat_rad[la],True,PdP)
-    P,dP = PdP
+    P,dP = _get_legendre(np.pi/2-lat_rad[la],lmax,mmax,True)
     for t in range(n_times):
       gh_i=(lmin-1)*(lmin+1) - (lmin_file-1)*(lmin_file+1)
     
@@ -262,7 +317,7 @@ def _Bnec_core(gh,lmax,lmin,lat_rad,lon_rad,spline_order,r,dB,n_times,lmin_file=
         #Bnec[t,Y,la]+=0
         Bnec[t,Z,la]-= P[l,0]*rpow*(gh[t,gh_i])*(l+1)
         gh_i+=1
-        for m in range(1,l+1): #order loop
+        for m in range(1,min(l+1,mmax+1)): #order loop
           Bnec[t,X,la]+=dP[l,m]*rpow\
               *(gh[t,gh_i]*lo_a_cs[m,0] + gh[t,gh_i+1]*lo_a_cs[m,1])  
         
@@ -272,22 +327,6 @@ def _Bnec_core(gh,lmax,lmin,lat_rad,lon_rad,spline_order,r,dB,n_times,lmin_file=
           Bnec[t,Z,la]-= P[l,m]*rpow*(l+1)\
               *(gh[t,gh_i]*lo_a_cs[m,0] + gh[t,gh_i+1]*lo_a_cs[m,1])  
           gh_i+=2
-    #gh_i = (lmin-1)*(lmin+1) - (lmin_file-1)*(lmin_file+1)
-    #m_arr = np.arange(-lmin,lmax+1,dtype=np.int16)
-    #gh_i = get_ghi(l_arr,m_arr,lmin_file)
-    #Bdiff1 = np.where(gh_i>0,gh[:,gh_i]*lo_a_cs .... ,np.zeros(gh_i.shape))
-    
-
-    #rpow = r**(-(l_arr+2))
-    #Bnec[:,X,la]+=PdP[1,l,0]*rpow*(gh[:, ])
-    #Bnec[:,Z,la]-= P[0,l,0]*rpow*(gh[:,gh_i])*(l_arr+1)
-
-    #Bnec[:,X,la]+=PdP[1,l_arr,l_arr]*rpow\
-    #          *(gh[t,gh_i]*lo_a_cs[m,0] + gh[t,gh_i+1]*lo_a_cs[m,1])
-        
-    #m=0
-
-
    
   return Bnec    
 
@@ -304,6 +343,49 @@ def _B_nec_spl(inarr,times,outval,der,k,b,c,ext=2):
           out[:,ai,bi,ci]=splev(outval,tck,der=der,ext=ext)
         
   return out
+
+
+def get_Bparameter(B,outp='FDI'):
+  """
+  Get Intensity, declination or inclination of magnetic field 
+
+  Parameters
+  ----------
+  B : array of floats
+    numpy.ndarray of magnetic vector components. Components must be
+    B_N = B[0], B_E = B[1], B_C=B[2]
+  outp : str or list, optional
+    Output parameter. Must be ``'F'``(intensity), ``'D'``
+    (declination) or ``'I'``(Inclination) (default ``'FDI'``).
+
+  """
+  Bsh = B.shape
+  if (len(Bsh)==4 and Bsh[1]==3):
+    out = np.empty((Bsh[0],len(outp),Bsh[2],Bsh[3]))
+    for i in range(Bsh[0]):
+      out[i] = get_Bparameter(B[i],outp)
+    return out[i]
+  elif Bsh[0]==3:
+    shape = [len(outp)] + list(Bsh[1:])
+    out = np.empty(shape)
+  else:
+    aux.logger.error("Unexpected shape of input {}".format(Bsh))
+    return
+
+  X,Y,Z = 0,1,2
+  for pi,p in enumerate(outp):
+    if p.upper() == 'F':
+      out[pi] = (B**2).sum(axis=0)
+    elif p.upper() == 'D':
+      out[pi] = np.arctan(B[Y]/B[X])
+    elif p.upper() == 'I':
+      out[pi] = np.arctan(B[Z]/np.sqrt(B[X]**2 + B[Y]**2))
+    else:
+      out[pi] = 0
+  return out
+
+def get_Bgradient(gradient='X'):
+  pass
 
 
 def get_Bnec(shc_fn,latitude,longitude,cols='all',lmax=-1,lmin=-1,lmin_file=1,r=1,h=0,t_out=[],k=-1,dB=False,ext=2):
@@ -367,7 +449,8 @@ def get_Bnec(shc_fn,latitude,longitude,cols='all',lmax=-1,lmin=-1,lmin_file=1,r=
 
   Returns
   -------
-  numpy.ndarray with shape ``(N_times,3,latitude,longtitude)``
+  numpy.ndarray
+    array with shape ``(N_times,3,latitude,longtitude)``
 
   See also
   --------
@@ -434,18 +517,74 @@ def get_Bnec(shc_fn,latitude,longitude,cols='all',lmax=-1,lmin=-1,lmin_file=1,r=
       return _B_nec_spl(Bnec,times,t_out,int(dB),spline_order,lla,llo)
 
 
+def mauersberger_lowes_spec(gh,r=1,lmax=-1,lmin=1):
+    """The Mauersberger–Lowes spectrum"""
+    ratio=1/r
+    if lmax<1:
+        lmax,lmin=get_l_maxmin(len(gh_vals))
+    R_l=np.empty(lmax+1-lmin)
+    gh_idx=0
+    for l in range(lmin,lmax+1):
+        gh_idx_n=gh_idx+2*l+1
+        g_sq=np.sum(gh_vals[gh_idx:gh_idx_n]**2)
+        gh_idx=gh_idx_n
+        
+        R_l[l-lmin] = (l+1)*ratio**(2*l+4)*g_sq
+    return R_l
 
-if aux._importable('numba'):
-    import numba
-    _get_legendre = numba.guvectorize(
-        ['void(float32[:,:,:],float32[:],boolean[:],float32[:,:,:])'],
-        '(m,n,p),(),()->(m,n,p)')(_get_legendre)
+def degree_correlation(gh1,gh2,lmax=-1,lmin=1):
+    """Correlation per spherical harmonic degree between two models 1 and 2"""
+    if lmax<1:
+        lmax1,lmin1=get_l_maxmin(len(gh1))
+        lmax2,lmin2=get_l_maxmin(len(gh2))
+        lmax = min(lmax1,lmax2)
+        lmin = min(lmin1,lmin2)
+    c12=np.empty(lmax+1-lmin)
+    i=0
+    for l in range(lmin,lmax+1):
+        #m=0
+        g12 = gh1[i]*gh2[i]
+        g11 = gh1[i]**2
+        g22 = gh2[i]**2
+        i+=1
+        for m in range(1,l+1):
+            g12 += gh1[i]*gh2[i]
+            g11 += gh1[i]**2
+            g22 += gh2[i]**2
+            i += 2
+        c12[l-lmin] = g12/np.sqrt(g11*g22)
+    return c12
+
+def mean_sq_vdiff(gh1,gh2,r=1,lmax=-1,lmin=1):
+    """Mean square vector field difference per spherical harmonic degree"""
+    ratio=1/r
+    if lmax<1:
+        lmax1,lmin1=get_l_maxmin(len(gh1))
+        lmax2,lmin2=get_l_maxmin(len(gh2))
+        lmax = min(lmax1,lmax2)
+        lmin = min(lmin1,lmin2)
+    r12 = np.empty(lmax+1-lmin)
+    i=0
+    for l in range(lmin,lmax+1):
+        #m=0
+        dg = (gh1[i]-gh2[i])**2
+        i += 1
+        for m in range(1,l+1):
+            dg += (gh1[i]-gh2[i])**2
+            i+=2
+        r12[l-lmin] = (l+1)*ratio**(2*l+4)*dg
+    return r12
+#if aux._importable('numba'):
+#    import numba
+    #_get_legendre = numba.guvectorize(
+    #    ['void(float32[:,:,:],float32[:],boolean[:],float32[:,:,:])'],
+    #    '(m,n,p),(),()->(m,n,p)')(_get_legendre)
     #get_l_maxmin = numba.jit(cache=True)(get_l_maxmin)
     #_Bnec_core = numba.jit(cache=True)(_Bnec_core)
     #_B_nec_spl = numba.jit(cache=True)(_B_nec_spl)
-else:
-    _get_legendre = np.vectorize(_get_legendre)
-    pass
+#else:
+    #_get_legendre = np.vectorize(_get_legendre)
+#    pass
 
 #@jit #(cache=True,nogil=True,nopython=True) 
 #(array(float64, 2d, C) x 2)(uint8,uint8,float64,bool)

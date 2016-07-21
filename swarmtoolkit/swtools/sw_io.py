@@ -46,7 +46,7 @@ def getCDFparams(src,*params,**kwargs):
     known, parameters within cdf files may be accessed using 
     `getCDFparamlist`_. Multiple parameters should be given as 
     separate, comma-separated strings. If no parameters are provided,
-    all parameters from the first cdf found in `src` will be used
+    all parameters from the first cdf found in `src` will be used.
   
   Keyword Arguments
   -----------------
@@ -54,7 +54,7 @@ def getCDFparams(src,*params,**kwargs):
       specify case-insensitive parameter name to use for filtering of files. If none 
       specified first parameter in `params` is assumed. Will not be 
       used unless ``filter_param=True`` is specified. Only supports values included
-      in the dictionary ``swtools.aux.PRODUCT_DIC``.
+      in the dictionary ``swarmtoolkit.aux.PRODUCT_DIC``.
 
   Returns
   -------
@@ -139,7 +139,7 @@ def unzip_file(input_file,output_loc):
 def _get_zip_content(zf,**zp):
   """extract zip file(s), return list of files with given format """
   if zp['temp']:
-    zp['dst']=tempfile.mkdtemp(prefix="swtools_")
+    zp['dst']=tempfile.mkdtemp(prefix="swarmtoolkit_")
   z=unzip_file(zf, zp['dst'])
   return [os.path.join(zp['dst'],f) for f in z.namelist() 
     if f.upper().split('.')[-1] in zp['cdfsuffix']]

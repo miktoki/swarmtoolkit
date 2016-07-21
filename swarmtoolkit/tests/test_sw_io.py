@@ -1,5 +1,5 @@
 import nose.tools as nt
-import swtools
+import swarmtoolkit as st
 import numpy as np 
 import datetime as dt
 import unittest
@@ -8,14 +8,14 @@ import os
 import warnings
 import zipfile
 
-import swtools.ops 
-import swtools.aux 
-import swtools.sph 
-import swtools.ops 
-import swtools.sw_io
+import st.ops 
+import st.aux 
+import st.sph 
+import st.ops 
+import st.sw_io
 
 
-swtools.debug_info(-1)#as error will be generated when testing 
+st.debug_info(-1)#as error will be generated when testing 
 #if errors work, stdout logging is suppressed
 
 warnings.simplefilter("ignore")
@@ -68,7 +68,7 @@ class test_CDF(unittest.TestCase):
         with zipfile.ZipFile(self.zn1, 'w') as myzip:
             myzip.write(self.fn3)
         os.remove(self.fn3)
-        print('REMOVE',self.fn3,os.path.isfile(self.fn3) )
+        
         
     def tearDown(self):
         for fn in (self.fn1,self.fn2,self.zn1):
@@ -76,10 +76,10 @@ class test_CDF(unittest.TestCase):
 
 
     def test_getCDFparams(self):
-        p1 = swtools.getCDFparams(self.fn1,'n','Timestamp')
+        p1 = st.getCDFparams(self.fn1,'n','Timestamp')
         n = p1[0]
         t = p1[1]
-        assert isinstance(n,swtools.Parameter)
+        assert isinstance(n,st.Parameter)
         assert len(n.values) == self.N, 'unexpected number of values: {}!={}'\
             .format(len(n.values),self.N)
         
@@ -93,21 +93,21 @@ class test_CDF(unittest.TestCase):
         assert n.unit == self.n_u,'{} != {}'.format(n.unit,self.n_u)
         tmp = n.values*2
 
-        p2 = swtools.getCDFparams('.','n',sat='B')
+        p2 = st.getCDFparams('.','n',sat='B')
         assert abs(p2[0]-n[0]-1) < self.atol,'{} != {}'\
             .format(p2[0],n[0]+1)
         pass
 
     def test_getCDFlist(self):
-        flist1 = swtools.getCDFlist(self.path)
-        flist2 = swtools.getCDFlist(start_t='2015-07-18',end_t='2015-09-18')
-        flist3 = swtools.getCDFlist(start_t='20150716',duration=2)
-        flistd = swtools.getCDFlist(self.path,cdfsuffix=['DBL'])
+        flist1 = st.getCDFlist(self.path)
+        flist2 = st.getCDFlist(start_t='2015-07-18',end_t='2015-09-18')
+        flist3 = st.getCDFlist(start_t='20150716',duration=2)
+        flistd = st.getCDFlist(self.path,cdfsuffix=['DBL'])
         
         #note that these unzip the zip and have to be placed after the commands
         #before to not influence them 
-        flistz = swtools.getCDFlist(self.path,includezip=True)
-        zlistz = swtools.getCDFlist(self.path,cdfsuffix=['DBL'],includezip=True)
+        flistz = st.getCDFlist(self.path,includezip=True)
+        zlistz = st.getCDFlist(self.path,cdfsuffix=['DBL'],includezip=True)
         
         assert len(flistz)==3,"len: {},{}".format(len(flistz),flistz)
         assert len(zlistz)==2,"len: {},{}".format(len(zlistz),zlistz)
@@ -128,11 +128,11 @@ class test_CDF(unittest.TestCase):
 
     def test_concatenate_values(self):
         a1 = np.hstack((self.n,self.n))
-        a2 = swtools.concatenate_values(self.n,self.n)
+        a2 = st.concatenate_values(self.n,self.n)
 
-        a4 = swtools.concatenate_values(np.vstack((self.n,self.n)),
+        a4 = st.concatenate_values(np.vstack((self.n,self.n)),
             np.vstack((self.n,self.n)),axis=0)
-        a3 = swtools.concatenate_values(np.vstack((self.n,self.n)),
+        a3 = st.concatenate_values(np.vstack((self.n,self.n)),
             np.vstack((self.n,self.n)),axis=1)
         
         np.testing.assert_allclose(a1,a2,atol=self.atol)
@@ -145,8 +145,8 @@ class test_CDF(unittest.TestCase):
 
 def test_read_sp3():
     atol = 1e-5
-    p1 = swtools.read_sp3('sample_kin.txt',doctype=1,SI_units=False)
-    p2 = swtools.read_sp3('sample_rd.txt',doctype=2)
+    p1 = st.read_sp3('sample_kin.txt',doctype=1,SI_units=False)
+    p2 = st.read_sp3('sample_rd.txt',doctype=2)
 
     assert abs(p1[0][0] - 5031.197333) < atol,"{} != {}"\
         .format(p1[0][0],5031.197333)
@@ -163,14 +163,14 @@ def test_read_sp3():
 def test_info_from_filename():
     fn1='SW_OPER_EFIA_PL_1B_20150716T000000_20150716T235959_0402_MDR_EFI_PL.cdf'
     fn2='SW_OPER_EFIB_PL_1B_20150718T000000_20150716T235959_0403_MDR_EFI_PL.cdf'
-    assert swtools.sw_io._info_from_filename(fn1,'mission') == "SW"
-    assert swtools.sw_io._info_from_filename(fn1,'version') == "0402"
+    assert st.sw_io._info_from_filename(fn1,'mission') == "SW"
+    assert st.sw_io._info_from_filename(fn1,'version') == "0402"
     t01 = dt.datetime(2015,7,16,0,0,0)
-    assert swtools.sw_io._info_from_filename(fn1,'t0') == t01
-    assert swtools.sw_io._info_from_filename(fn1,'product') == \
+    assert st.sw_io._info_from_filename(fn1,'t0') == t01
+    assert st.sw_io._info_from_filename(fn1,'product') == \
         'EFIA_PL_1B'+'_MDR_EFI_PL'
     
-    d2 = swtools.sw_io._info_from_filename(fn2)
+    d2 = st.sw_io._info_from_filename(fn2)
     for k in d2.keys():
         assert k in ['t0','t1','mission','oper','version','product','version'],k
     pass
@@ -185,26 +185,26 @@ def test_filter_filelist():
     fl2 = [i for i in fl]
     fl3 = [i for i in fl]
     filt1 = {'sat':'B','param0':'EEF'}
-    filt2 = {'sat':'A','period':swtools.aux._set_period(end_t='20150717',duration=5)}
-    swtools.sw_io._filter_filelist(fl,**filt1)
-    swtools.sw_io._filter_filelist(fl2,**filt2)
+    filt2 = {'sat':'A','period':st.aux._set_period(end_t='20150717',duration=5)}
+    st.sw_io._filter_filelist(fl,**filt1)
+    st.sw_io._filter_filelist(fl2,**filt2)
     assert fl  == [fl3[4]],"FL:\n'{}'\n".format('\n'.join(fl))
     assert fl2 == [fl3[0]],"FL:\n'{}'\n".format('\n'.join(fl2))
     pass
 
 def test_read_EFI():
     atol = 1e-5
-    pEFI = swtools.read_EFI_prov_txt('prel_efi.txt')
+    pEFI = st.read_EFI_prov_txt('prel_efi.txt')
 
     assert abs(pEFI['latitude'][0] - 6.797) < atol
 
-    pEFIn = swtools.read_EFI_prov_txt('prel_efi.txt','n')
+    pEFIn = st.read_EFI_prov_txt('prel_efi.txt','n')
     assert abs(pEFIn[0] - 163151) < atol,pEFIn[0]
     pass
 
 def test_Parameter():
     v,u,n = [1,2,3],'myunit','myname'
-    p = swtools.Parameter([1,2,3],'myunit','myname')
+    p = st.Parameter([1,2,3],'myunit','myname')
 
     assert p.name == n
     assert p.unit == u

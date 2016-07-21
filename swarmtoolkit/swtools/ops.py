@@ -9,11 +9,16 @@ import spacepy
 #import numexpr as ne
 #from iminuit import Minuit 
 from scipy.interpolate import InterpolatedUnivariateSpline,RectSphereBivariateSpline 
+from scipy.signal import savgol_filter
+
 
 from . import aux
 
 
 __all__=[ 'align_param',
+          'moving_mean',
+          'moving_std',
+          'map_of_means',
           'shift_param',
           'where_overlap',
           'fourier_transform',
@@ -856,9 +861,9 @@ def rising2cyclic(a,lim=[-90,90]):
     return out
 
 
-def interpolate2d_sphere(lat_rad, lon_rad, param,**kwargs):
+def interpolate2d_sphere(lat, lon, param,radians=True,**kwargs):
   """
-  Interpolate on rectangular mesh on sphere using radians
+  Interpolate on rectangular mesh on sphere
   
   Convenience function to call `RectSphereBivariateSpline 
   <http://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.RectSphereBivariateSpline.html>`_
@@ -874,7 +879,9 @@ def interpolate2d_sphere(lat_rad, lon_rad, param,**kwargs):
     ``(0, 2*pi)``.
   param : array_like
     2-D array of parameter with shape ``(lat_rad.size, lon_rad.size)``
-  
+  radians : bool, optional
+
+
   Returns
   -------
   `scipy.interpolate.RectSphereBivariateSpline`
@@ -884,10 +891,12 @@ def interpolate2d_sphere(lat_rad, lon_rad, param,**kwargs):
   -----
   Keyword arguments passed on to `RectSphereBivariateSpline`_.
   """
-  ##more general(slower) interpolation in two dimensions:
-  #interp2d
-  #return interp2d(x,y,z,**kwargs)
-  return RectSphereBivariateSpline(lat_rad,lon_rad,param,**kwargs)
+  d2r = np.pi/180
+  if not radians:
+    lat *= d2r
+    lon *= d2r
+
+  return RectSphereBivariateSpline(lat,lon,param,**kwargs)
 
 
 def where_diff(values,atol=None,rtol=None,pdiff=[75,25],axis=0,no_jump=False):
@@ -954,3 +963,84 @@ def where_diff(values,atol=None,rtol=None,pdiff=[75,25],axis=0,no_jump=False):
   else:
     return np.where(val_diff > diff)   
 
+
+def _moving_mean(a, n=100):
+  ret = np.cumsum(a, dtype=float)
+  ret[n:] = ret[n:] - ret[:-n]
+  return ret[n - 1:] / n
+
+
+def moving_std(a,n=100):
+  alen=len(a)
+  if alen<n:
+    return np.array([])
+  std_a = np.empty(alen-n)
+  for i in range(alen-n):
+    std_a[i] = np.std(a[i:n+i],ddof=1)
+  return std_a
+      
+
+def moving_mean(a,n=100,n_filter=11,k_filter=3,use_filter=True):
+  mmean = _moving_mean(a,n)
+  if use_filter:
+    return savgol_filter(mmean,n_filter,k_filter)
+  else:
+    return mmean
+
+
+def map_of_means(param,lat,lon,step=1,lat_bounds=[-90,90],lon_bounds=[-180,180],kernel_w=0,**kwargs):
+  
+  ### TODO dlat//step  should be int'd, not dlat
+  dlat = int(round(lat_bounds[1] - lat_bounds[0]))
+  dlon = int(round(lon_bounds[1] - lon_bounds[0]))
+
+  step_inv=0
+  if step>=1:
+      step=int(step)
+      mean_bin = np.zeros((dlat//step,dlon//step))
+      lat = (lat//step_inv)
+      lon = (lon//step)
+  else:
+      step_inv = int(round(1/step))
+      mean_bin = np.zeros((dlat*step_inv,dlon*step_inv))
+      lat = (lat*step_inv)
+      lon = (lon*step_inv)
+
+  count = mean_bin.copy().astype(int)
+  N = len(param)
+
+  for i in range(N):
+      loc = int(round((lat[i]-lat_bounds[0])*step_inv)),int(round((lon[i]-lon_bounds[0])*step_inv))
+      count[loc] += 1
+      mean_bin[loc] += param[i]
+  mean_bin = mean_bin/count
+
+  
+  from astropy.convolution import convolve_fft,Box2DKernel
+  conv_kwargs = {"boundary":'wrap',"normalize_kernel":True,"interpolate_nan":True}
+  conv_kwargs.update(kwargs)
+  
+
+  D = 86400 #points in 1 day
+  if kernel_w<1:
+    if N<7*D
+      kernel_w = np.ceil(5*max(1,step_inv))
+    else:
+      kernel_w = np.ceil(max(5,step_inv))
+  msg="\n\t".join(["\n\tStep size: {} (1/step if less than 1: {})"
+          .format(step,step_inv),
+        "Number of points: {}".format(N)
+        "Kernel width: {}".format(kernel_w)])
+  aux.logger.debug(msg)
+
+  g = Box2DKernel(kernel_width)
+  conv=convolve_fft(mean_bin,g,**kwargs)
+  nans = np.isnan(mean_bin)
+  mean_bin[nans] = conv[nans]
+  lat_grid,lon_grid = np.arange(-90+0.5*step,90,step),np.arange(-180+0.5*step,180,step)
+  return lat_grid,lon_grid,mean_bin
+  
+  
+
+
+  #mean_bin,lat_grid,lon_grid

@@ -1,0 +1,18 @@
+Changelog v 1.2
+- changed names from `swtools` to `swarmtoolkit`
+- new functions moving_std and moving_mean to compute rolling standard deviation and average of an array
+- function plot_basic has been renamed to plot
+- plot_geo coordinate arguments switched, now latitude is the first argument to align with ordering in other lat,lon functions
+- plot_geo new kwarg: show_grid
+- new function save_raw to save content of figure(without axes or padding)
+- new function getCDFattr to access cdf attributes
+- getCDFparamlist now returns list
+- getCDFparams with no params now accesses all params
+
+
+Changelog v 1.1:
+
+- fix bug where filtering of files did not work properly in dl_ftp
+- added optional keyword argument `unzip` to getCDFparamlist
+- keyword argument `inloc` changed to `src`; keyword arguments `outloc` and `dlloc` changed to `dst`
+- improved documentation

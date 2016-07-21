@@ -1,42 +1,42 @@
 .. Submodules
 .. ----------
 
-.. swtools.aux module
+.. swarmtoolkit.aux module
 .. ------------------
 
-..: swtools.aux
+..: swarmtoolkit.aux
 ..    :members:
 ..    :undoc-members:
 ..    :show-inheritance:
 ..
-.. swtools.ops module
+.. swarmtoolkit.ops module
 .. ------------------
 ..
-..: swtools.ops
+..: swarmtoolkit.ops
 ..    :members:
 ..    :undoc-members:
 ..    :show-inheritance:
 ..
-.. swtools.sph module
+.. swarmtoolkit.sph module
 .. ------------------
 ..
-..: swtools.sph
+..: swarmtoolkit.sph
 ..    :members:
 ..    :undoc-members:
 ..    :show-inheritance:
 ..
-.. swtools.sw_io module
+.. swarmtoolkit.sw_io module
 .. --------------------
 ..
-..: swtools.sw_io
+..: swarmtoolkit.sw_io
 ..    :members:
 ..    :undoc-members:
 ..    :show-inheritance:
 ..
-.. swtools.vis module
+.. swarmtoolkit.vis module
 .. ------------------
 ..
-..: swtools.vis
+..: swarmtoolkit.vis
 ..    :members:
 ..    :undoc-members:
 ..    :show-inheritance:

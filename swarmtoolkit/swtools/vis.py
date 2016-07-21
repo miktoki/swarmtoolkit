@@ -9,15 +9,16 @@ from mpl_toolkits.basemap import Basemap
 from . import aux
   
 __all__ = [ 'plot_align',
-            'plot_basic',
+            'plot',
             'plot_geo',
             'plot_scatter',
-            'plot_twinx']
+            'plot_twinx',
+            'save_raw']
 
 
-def plot_basic(x,y,*xy,show=False,fmt_t=True,figsize=plt.rcParams["figure.figsize"],logx=False,logy=False,legends=[],lloc='best',lhide=False,lbox=False,lfontsize=15,colors=[],**plotkwargs):
+def plot(x,y,*xy,show=False,fmt_t=True,figsize=plt.rcParams["figure.figsize"],logx=False,logy=False,legends=[],lloc='best',lhide=False,lbox=False,lfontsize=15,colors=[],**plotkwargs):
   """
-  .. _plot_basic:
+  .. _plot:
     
     Basic plot using `matplotlib`.
 
@@ -137,7 +138,7 @@ def plot_twinx(x,y,*xy,show=False,logy=False,legends=[],lloc='best',lall=True,lb
 
   Share same x-axis as another plot, but with separate y-axis values.
   Should be used in conjunction with another plot function 
-  (eg. `plot_basic`_).
+  (eg. `plot`_).
 
   Parameters
   ----------
@@ -192,7 +193,7 @@ def plot_twinx(x,y,*xy,show=False,logy=False,legends=[],lloc='best',lall=True,lb
 
   See also
   --------
-  plot_basic, plot_align
+  plot, plot_align
   """
   if not ax: 
     ax=plt.gca()
@@ -240,15 +241,15 @@ def plot_twinx(x,y,*xy,show=False,logy=False,legends=[],lloc='best',lall=True,lb
 
 def plot_align(p1,p2,t1,t2,k=3,align_to=False,show=False,fmt_t=True,figsize=plt.rcParams["figure.figsize"],logx=False,logy=False,legends=[],lloc='best',lhide=False,colors=[],**plotkwargs):
   """
-  Convenience function which combines `align_param`_ with `plot_basic`_
+  Convenience function which combines `align_param`_ with `plot`_
 
   Align p1 and p2 using interpolation such that values will be sampled 
-  on the same time steps. Output will be the same as for `plot_basic`_.
+  on the same time steps. Output will be the same as for `plot`_.
 
-  See `align_param`_ and `plot_basic`_ for more information on arguments.
+  See `align_param`_ and `plot`_ for more information on arguments.
   """
   aligned=align_param(p1,p2,t1,t2,k=k,align_to=align_to)
-  return plot_basic(aligned[2],aligned[0],aligned[2],aligned[1],show=show,
+  return plot(aligned[2],aligned[0],aligned[2],aligned[1],show=show,
       fmt_t=fmt_t,figsize=figsize,logx=logx,logy=logy,legends=legends,lloc=lloc,colors=colors,lhide=lhide,**plotkwargs)
 
 
@@ -322,16 +323,16 @@ def plot_scatter(x,y,param,show=False,fmt_t=True,figsize=plt.rcParams["figure.fi
   return fig,ax
 
 
-def plot_geo(lon,lat,param,ptype='scatter',figsize=plt.rcParams["figure.figsize"],cmap=plt.rcParams["image.cmap"],cbar=True,dark_map=False,show=False,contourlevels=15,log_contour=False,show_lat=True,show_lon=False,**kwargs):
+def plot_geo(lat,lon,param,ptype='scatter',figsize=plt.rcParams["figure.figsize"],cmap=plt.rcParams["image.cmap"],cbar=True,dark_map=False,show=False,contourlevels=15,log_contour=False,show_lat=True,show_lon=False,show_grd=True,**kwargs):
   """
   Plot parameter on the globe using `mpl_toolkits.basemap.Basemap`.
 
   Parameters
   ----------
-  lon : array_like
-    Longitude of `param`.
   lat : array_like
     Latitude of `param`.
+  lon : array_like
+    Longitude of `param`.
   param : array_like
     Value of `param` at each ``(lat,lon)``-coordinate.
   ptype : ``{'scatter'|'colormesh'|'contour'}``, optional
@@ -353,9 +354,11 @@ def plot_geo(lon,lat,param,ptype='scatter',figsize=plt.rcParams["figure.figsize"
   log_contour : bool, optional
     plot contour levels using logarithmic distances between lines.
   show_lat : bool, optional
-    show labels for latitude (default ``True``).
+    show labels for latitude(requires `show_grid`) (default ``True``).
   show_lon : bool, optional
-    show labels for longitude (default ``False``).
+    show labels for longitude(requires `show_grid`) (default ``False``).
+  show_grid : bool, optional
+    show gridlines(graticules) (default ``True``). 
   
   Returns 
   -------
@@ -417,7 +420,6 @@ def plot_geo(lon,lat,param,ptype='scatter',figsize=plt.rcParams["figure.figsize"
   for kw in list(kwargs.keys()):
     if kw in mapkw:
       mapkw[kw]=kwargs.pop(kw)
-  
   # to set default values different from standard default values
   s_kwargs={
     'cmap':cmap,'linewidths':0.0, 'vmin':np.min(param),'vmax':np.max(param)}
@@ -433,14 +435,15 @@ def plot_geo(lon,lat,param,ptype='scatter',figsize=plt.rcParams["figure.figsize"
       cmesh_kwargs['latlon']=True
 
   fig=plt.figure(figsize=figsize)
-  if (mapkw['projection'] not in ('ortho',)) and show_lat:
-    m.drawparallels(np.arange(-90,90,30),labels=[1,0,0,0])
-  else: 
-    m.drawparallels(np.arange(-90,90,30))
-  if show_lon:
-    m.drawmeridians(np.arange(m.lonmin,m.lonmax+30,60),labels=[0,0,0,1])
-  else:  
-    m.drawmeridians(np.arange(m.lonmin,m.lonmax+30,60))
+  if show_grd:
+    if (mapkw['projection'] not in ('ortho',)) and show_lat:
+      m.drawparallels(np.arange(-90,90,30),labels=[1,0,0,0])
+    else: 
+      m.drawparallels(np.arange(-90,90,30))
+    if show_lon:
+      m.drawmeridians(np.arange(m.lonmin,m.lonmax+30,60),labels=[0,0,0,1])
+    else:  
+      m.drawmeridians(np.arange(m.lonmin,m.lonmax+30,60))
   
   if dark_map:
     m.drawmapboundary(fill_color='#333333')
@@ -475,3 +478,51 @@ def plot_geo(lon,lat,param,ptype='scatter',figsize=plt.rcParams["figure.figsize"
   if show:
     plt.show()
   return fig,m
+
+def save_raw(fig_,fn='raw_img.png',shape_ratio=None,dpi=1):
+  """
+  Save content of figure to file without axes or padding
+
+  Parameters
+  ----------
+  fig_ : list or tuple
+    List with figure in first index. This corresponds to the output 
+    of the plotting functions.
+  fn : str, optional
+    Name of output file (default ``'raw_img.png'``).
+  shape_ratio : list or tuple
+    width and height of image in relative units (matplotlib's "inches")
+    , should be manually set to prevent padding (default ``None``).
+  dpi : scalar,optional
+    the resolution of the image in dots per inch.
+
+  Examples
+  --------
+  Printing straight from plot function:
+
+  >>> import swarmtoolkit as st
+  >>> st.save_raw(st.plot([0,1,2],[0,2,1]))
+
+  How to retrieve the image as a numpy.ndarray:
+
+  >>> import matplotlib.pyplot as plt
+  >>> img_as_array = plt.imread('raw_img.png',interpolation='nearest')
+
+  Save plotted image normally in matplotlib:
+
+  >>> import matplotlib.pyplot as plt 
+  >>> plt.savefig('myfilename.png')
+
+  Alternatively `figure` or `axes` object can be used (eg. ``fig.savefig``)
+
+  """
+  f = fig_[0]
+  f.frameon=False
+  if shape_ratio:
+    f.set_size_inches(*shape_ratio)
+  f.set_tight_layout(True)
+  ax = f.gca()
+  ax.set_axis_off()
+
+  plt.savefig(fn,dpi=dpi)
+  aux.logger.info("Image '{}' created".format(fn))

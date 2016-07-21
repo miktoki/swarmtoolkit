@@ -1,30 +1,30 @@
 import nose.tools as nt
-import swtools
+import swarmtoolkit as st 
 import numpy as np 
 import datetime as dt
 import unittest
 import spacepy
 
-import swtools.ops 
-import swtools.aux 
-import swtools.sph 
-import swtools.ops 
+import st.ops 
+import st.aux 
+import st.sph 
+import st.ops 
 
 
-swtools.debug_info(-1)#as error will be generated when testing if errors work, stdout logging is suppressed
+st.debug_info(-1)#as error will be generated when testing if errors work, stdout logging is suppressed
 
  
 def test_get_l_maxmin():
-  assert swtools.sph.get_l_maxmin(65,lmin= 4) == ( 8, 4)
-  assert swtools.sph.get_l_maxmin(57,lmax=28) == (28,28)
-  assert swtools.sph.get_l_maxmin(24,lmin= 1) == ( 4, 1)
-  assert swtools.sph.get_l_maxmin(25        ) == (12,12)
-  assert swtools.sph.get_l_maxmin(15        ) == ( 3, 1)
-  assert swtools.sph.get_l_maxmin(21,lmax= 4) == ( 4, 2)
+  assert st.sph.get_l_maxmin(65,lmin= 4) == ( 8, 4)
+  assert st.sph.get_l_maxmin(57,lmax=28) == (28,28)
+  assert st.sph.get_l_maxmin(24,lmin= 1) == ( 4, 1)
+  assert st.sph.get_l_maxmin(25        ) == (12,12)
+  assert st.sph.get_l_maxmin(15        ) == ( 3, 1)
+  assert st.sph.get_l_maxmin(21,lmax= 4) == ( 4, 2)
 
 
 def test_read_shc():
-  shc_f=swtools.read_shc('simple_model.shc')
+  shc_f=st.read_shc('simple_model.shc')
 
   assert shc_f[1] == 1
   assert shc_f[2] == 2
@@ -34,7 +34,7 @@ def test_read_shc():
     0.1,  0.2,  0. ,  0.2,  0. ,  0. ,  0. ,  0.3,  0. ,  0. ]),
     atol=1e-8)
 
-  shc_f=swtools.read_shc('simple_model.shc',cols=[3])
+  shc_f=st.read_shc('simple_model.shc',cols=[3])
   np.testing.assert_allclose(shc_f[0][0],np.array([
     5. ,  1. ,  4.4,  0.1,  0.2,  0.5,  0.4,  0.2,  0. ,  0. ,  0.1,  
     0.2,  0.1,  0.1,  0.1,  0. ,  0. ,  0. ,  0.4,  0. ,  0. ]),
@@ -45,8 +45,8 @@ def test_bnec():
   lat = np.arange(0.5,2)#0.5,1.5
   lon = np.arange(0.8,2)#0.8,1.8
 
-  Bnec1 = swtools.get_Bnec('simple_model.shc',lat,lon,lmin_file=2)
-  Bnec2 = swtools.get_Bnec('simple_model.shc',lat,lon,r=1.2,lmin_file=2)
+  Bnec1 = st.get_Bnec('simple_model.shc',lat,lon,lmin_file=2)
+  Bnec2 = st.get_Bnec('simple_model.shc',lat,lon,r=1.2,lmin_file=2)
   
   B0x = Bnec1[0,0]
   B1x = Bnec2[1,0]
@@ -68,7 +68,7 @@ def test_legendre():
   lat_rad = np.arange(0.5,2)*np.pi/180
   P, dP = np.zeros((2,3,3)), np.zeros((2,3,3))
   for la in range(len(lat_rad)):
-    P[la], dP[la] = swtools.sph._get_legendre(2,2,np.pi/2-lat_rad[la],True)
+    P[la], dP[la] = st.sph._get_legendre(np.pi/2-lat_rad[la],2,2,True)
 
   Pcomp = np.array([[
             [1., 0., 0.],
@@ -91,7 +91,9 @@ def test_legendre():
   np.testing.assert_allclose( P, Pcomp,atol=1e-8)
   np.testing.assert_allclose(dP,dPcomp,atol=1e-8)
 
-
+  np.testing.assert_allclose(
+    st.sph._get_legendre(0.5,5,3,True)[0,3,2],
+    0.39061233038839054954,atol=1e-16)
 
 if __name__ == '__main__':
   import nose

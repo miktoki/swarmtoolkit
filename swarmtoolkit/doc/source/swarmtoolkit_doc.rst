@@ -1,12 +1,12 @@
-.. _swtools_doc:
+.. _swarmtoolkit_doc:
 
-.. automodule:: swtools
+.. automodule:: swarmtoolkit
     :members:
     
 Keyword arguments hierachy:
 ---------------------------
 
-Several key functions in `swtools` pass on keyword arguments to functions they call under the hood. Below is an overview to help keep track of this:
+Several key functions in `swarmtoolkit` pass on keyword arguments to functions they call under the hood. Below is an overview to help keep track of this:
 
     `getCDFparams`_  -> `getCDFparamlist`_ (if no parameter is provided)
 

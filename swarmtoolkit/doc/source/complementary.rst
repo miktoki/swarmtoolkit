@@ -1,7 +1,7 @@
 Complementary packages
 ======================
 
-.. below are some packages that can complement `swtools`
+.. below are some packages that can complement `swarmtoolkit`
 
 Converting between geographic and magnetic coordinates `aacgmv2 <https://github.com/cmeeren/aacgmv2>`_
 -----------------------------------------------------------------------------------------------------

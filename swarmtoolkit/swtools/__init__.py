@@ -5,7 +5,7 @@
 Documentation
 =============
 
-`swtools` is a toolbox intended to provide simple and quick access to
+`swarmtoolkit` is a toolbox intended to provide simple and quick access to
 the Swarm L1 and L2 products for Python3. 
 
 Main features:
@@ -30,18 +30,23 @@ started. The documentation provides a more comprehensive look at the features.
 Documentation shown below may also be found for each function:
     -  by using the ``help`` function:
 
-        >>> help(swtools.getCDFparams)
+        >>> help(swarmtoolkit.getCDFparams)
 
     -  in `ipython` shell by typing ``?`` after the object:
     
-        >>> swtools.getCDFparams?
+        >>> swarmtoolkit.getCDFparams?
+        
+For ease of use, the abbreviation ``st`` is suggested for `swarmtoolkit`:
+
+    >>> import swarmtoolkit as st
+    >>> st.plot([0,1,2],[2,1,0])
 """
 
 __version__ = '1.1.0'
 
 import sys as _sys
 if _sys.version_info[0]<3:
-  print('You are importing swtools made for python3 using'+\
+  print('You are importing swarmtoolkit made for python3 using'+\
   ' Python version {}.{}.{} which might not be supported by this module\n'
   .format(*_sys.version_info[:3]))
 del _sys

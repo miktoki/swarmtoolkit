@@ -323,7 +323,7 @@ def _set_sw_logger(use_color=True):
   """set up logger"""
   global logger
   if not logger:
-    logger = logging.getLogger('swtools-logger')
+    logger = logging.getLogger('swarmtoolkit-logger')
     logger.setLevel(logging.INFO)
     handler = logging.StreamHandler()
     formatter = logging.Formatter("%(levelname)s\t%(message)s")
