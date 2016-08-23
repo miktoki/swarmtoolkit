@@ -2,7 +2,7 @@
    sphinx-quickstart on Mon Jan  4 11:28:36 2016.
 
 swarmtoolkit index
-=============
+==================
 .. _index:
 
 .. toctree::
@@ -12,5 +12,6 @@ swarmtoolkit index
    install
    test
    remarks
+   complementary
 
 

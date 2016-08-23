@@ -16,7 +16,7 @@
 import sys
 import os
 import shlex
-from swtools import __version__
+from swarmtoolkit import __version__
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -55,7 +55,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'swtools'
+project = 'swarmtoolkit'
 copyright = '2015, European Space Agency '
 author = 'Mikael Toresen'
 
@@ -209,7 +209,7 @@ html_show_sphinx = False
 #html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'swtoolsdoc'
+htmlhelp_basename = 'swarmtoolkitdoc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -231,7 +231,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  (master_doc, 'swtools_doc.tex', 'swtools',
+  (master_doc, 'swarmtoolkit_doc.tex', 'swarmtoolkit',
    'Mikael Toresen', 'howto'),
 ]
 
@@ -261,7 +261,7 @@ latex_domain_indices = False
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'swtools_doc', 'swtools',
+    (master_doc, 'swarmtoolkit_doc', 'swarmtoolkit',
      [author], 1)
 ]
 
@@ -275,8 +275,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  (master_doc, 'swtools', 'swtools',
-   author, 'swtools', 'One line description of project.',
+  (master_doc, 'swarmtoolkit', 'swarmtoolkit',
+   author, 'swarmtoolkit', 'Python toolkit for access and visualization of data from ESA\'s Swarm mission.',
    'Miscellaneous'),
 ]
 

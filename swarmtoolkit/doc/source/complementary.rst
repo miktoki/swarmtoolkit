@@ -4,7 +4,7 @@ Complementary packages
 .. below are some packages that can complement `swarmtoolkit`
 
 Converting between geographic and magnetic coordinates `aacgmv2 <https://github.com/cmeeren/aacgmv2>`_
------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------
 
 `aacgmv2` is a *pip*-installable wrapper to the  `AACGM-v2 C library <https://engineering.dartmouth.edu/superdarn/aacgm.html>`_ (Altitude adjusted corrected geomagnetic) with computation required for conversion to the *magnetic local time*. From their `github repository <https://github.com/cmeeren/aacgmv2>`_ (taken 15.07.2016):
 

@@ -9,9 +9,11 @@ Installation requirements
 - matplotlib(>=1.5)
 - basemap (>=1.0, from mpl_toolkits)
 - spacepy (>=0.1.5)
-- numexpr (>=2.4)
 - ftputil (>=3.0)
-- iminuit (>=1.0)
+
+- iminuit (>=1.0) (for the function `shift_param`)
+- numexpr (>=2.4) (for the function `shift_param`)
+- astropy (>=1.0) (for the function `map_of_means`)
 
 This *should* be all you need to do to get started with swarmtoolkit:
 

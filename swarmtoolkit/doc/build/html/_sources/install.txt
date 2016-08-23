@@ -1,7 +1,7 @@
 Installation requirements
 -------------------------
 
-``swtools`` requires::
+``swarmtoolkit`` requires::
 
 - Python (>=3.2)
 - Numpy (>=1.5)
@@ -13,7 +13,7 @@ Installation requirements
 - ftputil (>=3.0)
 - iminuit (>=1.0)
 
-This *should* be all you need to do to get started with swtools:
+This *should* be all you need to do to get started with swarmtoolkit:
 
 Install python, C-compile w/ python headers, which for ubuntu the following should suffice::
 
@@ -29,12 +29,12 @@ install required packages::
 
     pip install ftputil iminuit
 
-Then everything should be ready to be run. If you want to use ``swtools``, either type in:: 
+Then everything should be ready to be run. If you want to use ``swarmtoolkit``, either type in:: 
 
     python setup.py install 
 
-in the root folder of swtools, or, manually or add ``swtools`` to your pythonpath in a ``.bash_profile`` or ``.bashrc`` file eg:: 
+in the root folder of swarmtoolkit, or, manually or add ``swarmtoolkit`` to your pythonpath in a ``.bash_profile`` or ``.bashrc`` file eg:: 
 
-    export PYTHONPATH=$PYTHONPATH:/path/to/swtools/directory
+    export PYTHONPATH=$PYTHONPATH:/path/to/swarmtoolkit/directory
 
 to use jupyter/ipython notebook just type ``ipython notebook`` in a terminal (optionally add a file path of a notebook file) and it should start up in a browser.
