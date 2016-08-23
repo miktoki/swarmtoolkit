@@ -8,4 +8,5 @@
 zip_module.py
 .ipynb_checkpoints
 __pycache__
-swarmtoolkit/doc/build/
+swarmtoolkit/doc/build/**
+
