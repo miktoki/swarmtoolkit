@@ -5,10 +5,10 @@ import datetime as dt
 import unittest
 import spacepy
 
-import st.ops 
-import st.aux 
-import st.sph 
-import st.ops 
+import swarmtoolkit.ops 
+import swarmtoolkit.aux 
+import swarmtoolkit.sph 
+import swarmtoolkit.ops 
 
 
 st.debug_info(-1)#as error will be generated when testing if errors work, stdout logging is suppressed

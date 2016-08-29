@@ -8,11 +8,11 @@ import os
 import warnings
 import zipfile
 
-import st.ops 
-import st.aux 
-import st.sph 
-import st.ops 
-import st.sw_io
+import swarmtoolkit.ops 
+import swarmtoolkit.aux 
+import swarmtoolkit.sph 
+import swarmtoolkit.ops 
+import swarmtoolkit.sw_io
 
 
 st.debug_info(-1)#as error will be generated when testing 
