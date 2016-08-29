@@ -358,10 +358,10 @@ def get_index(l,m,lmin=1,mmax=-1):
       return idx + (t>0)*t*(t+1)
       
 
-def _Bnec_core(gh,lmax,lmin,lat_rad,lon_rad,spline_order,r,dB,n_times,lmin_file=1,mmax=-1,isrc=True):
+def _Bnec_core(gh,lmax,lmin,clat_rad,lon_rad,spline_order,r,dB,n_times,lmin_file=1,mmax=-1,isrc=True):
   """Compute magnetic field in North-East-Center reference system"""
   X,Y,Z = 0,1,2#N,E,C indices
-  llo,lla = len(lon_rad),len(lat_rad)
+  llo,lla = len(lon_rad),len(clat_rad)
   if mmax<0:
     mmax = lmax
 
@@ -370,48 +370,54 @@ def _Bnec_core(gh,lmax,lmin,lat_rad,lon_rad,spline_order,r,dB,n_times,lmin_file=
     lo_a_cs[m,0] = np.cos(m*lon_rad)
     lo_a_cs[m,1] = np.sin(m*lon_rad)
   
+  
   Bnec = np.zeros((n_times,3,lla,llo))
-  la_arr = np.arange(lla,dtype=np.uint16)
-  t_arr = np.arange(n_times,dtype=np.uint16)
-  l_arr = np.arange(lmin,lmax+1,dtype=np.uint16)
   #m arr goes from 1 to l
   if isrc:
-    rf = lambda l:r**(-(l+2))
     s = 1
+    l0 = -2
   else:
-    rf = lambda l:r**(l-1)
     s = -1
+    l0 = -1
 
+  m_arr = np.arange(mmax+1)
+  l_arr = np.arange(lmin,lmax+1)
+  u=np.newaxis
   for la in range(lla):#lat_rad loop
-    cos_th_inv = np.cos(lat_rad[la])
-    P,dP = _get_legendre(np.pi/2-lat_rad[la],lmax,mmax,True)
+    s_inv = 1/np.sin(clat_rad[la])
+    P,dP = _get_legendre(clat_rad[la],lmax,mmax,True)
     for t in range(n_times):
-      gh_i = (lmin-1)*(lmin+1) - (lmin_file-1)*(lmin_file+1)
-    
-      for l in range(lmin,lmax+1):#degree loop
-        rpow = rf(l)
-        #m=0 #=> sin(mX)=0,cos(mX)=1 out1=X*m=0
-        Bnec[t,X,la] += dP[l,0]*rpow*(gh[t,gh_i])
-        #Bnec[t,Y,la]+=0
-        Bnec[t,Z,la] -= P[l,0]*rpow*(gh[t,gh_i])*(l+isrc)*s
-        gh_i+=1
-        for m in range(1,min(l+1,mmax+1)): #order loop
-          Bnec[t,X,la] += dP[l,m]*rpow\
-              *(gh[t,gh_i]*lo_a_cs[m,0] + gh[t,gh_i+1]*lo_a_cs[m,1])  
+      ghcs = _compute_gh_cs(gh,lo_a_cs,lmax,lmin,t,llo,lmin_file,mmax)
+      
+      rpow = r**(l0-s*(l_arr))
+
+
+      for li,l in enumerate(range(lmin,lmax+1)):#degree loop
+        #rpow = r**(l0-s*(l))
+        m = m_arr[:min(l+1,mmax+1)]
         
-          Bnec[t,Y,la] += P[l,m]*cos_th_inv*rpow*m\
-              *(gh[t,gh_i]*lo_a_cs[m,1] - gh[t,gh_i+1]*lo_a_cs[m,0]) 
+        Bnec[t,X,la] += rpow[li]*(dP[l,m,u]*ghcs[li,m,0]).sum(0) 
+        Bnec[t,Y,la] += rpow[li]* (P[l,m,u]*s_inv*m[:,u]*ghcs[li,m,1]).sum(0)
+        Bnec[t,Z,la] -= rpow[li]* (P[l,m,u]*(l+isrc)*s*ghcs[li,m,0]).sum(0) 
+        #m=0 #=> sin(mX)=0,cos(mX)=1 out1=X*m=0
+        #Bnec[t,X,la] += dP[l,0]*rpow*ghcs[li,0,0]
+        #Bnec[t,Y,la]+=0
+        #Bnec[t,Z,la] -= P[l,0]*rpow*(ghcs[li,0,0])*(l+isrc)*s
+        #for m in range(1,min(l+1,mmax+1)): #order loop
+
+          #Bnec[t,X,la] += dP[l,m]*rpow*ghcs[li,m,0]  
+        
+          #Bnec[t,Y,la] += P[l,m]*s_inv*rpow*m*ghcs[li,m,1]
           
-          Bnec[t,Z,la] -= P[l,m]*rpow*(l+isrc)*s\
-              *(gh[t,gh_i]*lo_a_cs[m,0] + gh[t,gh_i+1]*lo_a_cs[m,1])
-          gh_i+=2
-   
+          #Bnec[t,Z,la] -= P[l,m]*rpow*(l+isrc)*s*ghcs[li,m,0] 
+         
   return Bnec 
 
-def _Bnec_core_grad(gh,lmax,lmin,lat_rad,lon_rad,spline_order,r,dB,n_times,lmin_file=1,mmax=-1,isrc=True,grad='E'):
+
+def _Bnec_core_grad(gh,lmax,lmin,clat_rad,lon_rad,spline_order,r,dB,n_times,lmin_file=1,mmax=-1,isrc=True,grad='E'):
   """Compute gradient of magnetic field in North-East-Center reference system"""
   X,Y,Z = 0,1,2#N,E,C indices
-  llo,lla = len(lon_rad),len(lat_rad)
+  llo,lla = len(lon_rad),len(clat_rad)
   if mmax<0:
     mmax = lmax
 
@@ -421,102 +427,108 @@ def _Bnec_core_grad(gh,lmax,lmin,lat_rad,lon_rad,spline_order,r,dB,n_times,lmin_
     lo_a_cs[m,1]=np.sin(m*lon_rad)
   
   Bnec = np.zeros((n_times,3,lla,llo))
-  la_arr = np.arange(lla,dtype=np.uint16)
-  t_arr = np.arange(n_times,dtype=np.uint16)
-  l_arr = np.arange(lmin,lmax+1,dtype=np.uint16)
   #m arr goes from 1 to l
   
   R_inv=1/(r*6371.2)
   
 
   if isrc:
-    rf = lambda l:r**(-(l+2))*R_inv
     s = 1
+    l0 = -2
   else:
-    rf = lambda l:r**(l-1)*R_inv
     s = -1
+    l0 = -1
 
+  m_arr = np.arange(mmax+1)
+  l_arr = np.arange(lmin,lmax+1)
+  u=np.newaxis
+  
   if grad=='N':
     for la in range(lla):#lat_rad loop
-      cos_th_inv = np.cos(lat_rad[la])
-      PdP = _get_legendre_grad(np.pi/2-lat_rad[la],lmax,mmax,True)
+      s_inv = 1/np.sin(clat_rad[la])
+      t_inv = 1/np.tan(clat_rad[la])
+      PdP = _get_legendre_grad(clat_rad[la],lmax,mmax,True)
       for t in range(n_times):
-        gh_i = (lmin-1)*(lmin+1) - (lmin_file-1)*(lmin_file+1)
-    
+        ghcs = _compute_gh_cs(gh,lo_a_cs,lmax,lmin,t,llo,lmin_file,mmax)
+      
+        rpow = r**(l0-s*(l_arr))
 
-        for l in range(lmin,lmax+1):#degree loop
-          rpow = rf(l)
-          #m=0 #=> sin(mX)=0,cos(mX)=1 out1=X*m=0
-          Bnec[t,X,la] += PdP[2,l,0]*rpow*(gh[t,gh_i])
-          #Bnec[t,Y,la]+=0
-          Bnec[t,Z,la] -= PdP[1,l,0]*rpow*(gh[t,gh_i])*(l+2)
-          gh_i+=1
-          for m in range(1,min(l+1,mmax+1)): #order loop
-            Bnec[t,X,la] += PdP[2,l,m]*rpow\
-              *(gh[t,gh_i]*lo_a_cs[m,0] + gh[t,gh_i+1]*lo_a_cs[m,1])  
+        for li,l in enumerate(range(lmin,lmax+1)):#degree loop
+          m = m_arr[:min(l+1,mmax+1)]
         
-            Bnec[t,Y,la] += (PdP[1,l,m]*cos_th_inv*rpow*m\
-              *(gh[t,gh_i]*lo_a_cs[m,1] - gh[t,gh_i+1]*lo_a_cs[m,0])) 
+          Bnec[t,X,la] += rpow[li]*(ghcs[li,m,0]\
+              *(PdP[2,l,m,u] - s*(l+isrc)*PdP[0,l,m,u])).sum(0)
+        
+          Bnec[t,Y,la] -= rpow[li]*(ghcs[li,m,1]*m[:,u]*s_inv\
+              *(PdP[1,l,m,u]-t_inv*PdP[0,l,m,u])).sum(0)
           
-            Bnec[t,Z,la] -= PdP[1,l,m]*rpow*(l+2)\
-              *(gh[t,gh_i]*lo_a_cs[m,0] + gh[t,gh_i+1]*lo_a_cs[m,1])  
-            gh_i+=2
+          Bnec[t,Z,la] += s*rpow[li]*(ghcs[li,m,0,u]*PdP[1,l,m,u]*(l+isrc+s)).sum(0)
+          
   elif grad=='E':
     for la in range(lla):#lat_rad loop
-      cos_th_inv = np.cos(lat_rad[la])
-      PdP = _get_legendre(np.pi/2-lat_rad[la],lmax,mmax,True)
+      s_inv = 1/np.sin(clat_rad[la])
+      t_inv = 1/np.tan(clat_rad[la])
+      coth_inv = 1/np.tanh(clat_rad[la])
+      PdP = _get_legendre(clat_rad[la],lmax,mmax,True)
       for t in range(n_times):
-        gh_i = (lmin-1)*(lmin+1) - (lmin_file-1)*(lmin_file+1)
-    
+        ghcs = _compute_gh_cs(gh,lo_a_cs,lmax,lmin,t,llo,lmin_file,mmax)
+      
+        rpow = r**(l0-s*(l_arr))
 
         for l in range(lmin,lmax+1):#degree loop
-          rpow = rf(l)
-          #m=0 #=> sin(mX)=0,cos(mX)=1 out1=X*m=0
-          #Bnec[t,X,la] += 0
-          #Bnec[t,Y,la] += 0
-          #Bnec[t,Z,la] -= 0
-          gh_i+=1
-          for m in range(1,min(l+1,mmax+1)): #order loop 
-            ###CHECK SIGNS FOR B_{?N}
-            Bnec[t,X,la] += PdP[1,l,m]*cos_th_inv*m*rpow\
-              *(gh[t,gh_i]*lo_a_cs[m,1] - gh[t,gh_i+1]*lo_a_cs[m,0])  
-        
-            Bnec[t,Y,la] += (PdP[0,l,m]*(cos_th_inv*m)**2*rpow\
-              *(gh[t,gh_i]*lo_a_cs[m,0] + gh[t,gh_i+1]*lo_a_cs[m,1])) 
           
-            Bnec[t,Z,la] -= PdP[0,l,m]*cos_th_inv*m*rpow*(l+1)\
-              *(gh[t,gh_i]*lo_a_cs[m,1] - gh[t,gh_i+1]*lo_a_cs[m,0])  
-            gh_i+=2
+          m = m_arr[:min(l+1,mmax+1)]
+          m_s = m*s_inv
+
+          Bnec[t,X,la] -= rpow[li]*(ghcs[li,m,1]*m_s[:,u]\
+              *(PdP[1,l,m,u]-t_inv*PdP[0,l,m,u])).sum(0)
+        
+          Bnec[t,Y,la] += rpow[li]*(ghcs[li,m,0]\
+              *(PdP[1,l,m,u]*coth_inv-(m_s[:,u]**2\
+              +s*(l+isrc))*PdP[0,l,m,u])).sum(0)
+          
+          Bnec[t,Z,la] -= rpow[li]*(ghcs[li,m,1]*m_s[:,u]\
+              *(l+1+isrc)*PdP[0,l,m,u]).sum(0)
+
   elif grad=='C':
     for la in range(lla):#lat_rad loop
-      cos_th_inv = np.cos(lat_rad[la])
-      PdP = _get_legendre(np.pi/2-lat_rad[la],lmax,mmax,True)
+      s_inv = 1/np.sin(clat_rad[la])
+      t_inv = 1/np.tan(clat_rad[la])
+      PdP = _get_legendre(clat_rad[la],lmax,mmax,True)
       for t in range(n_times):
-        gh_i = (lmin-1)*(lmin+1) - (lmin_file-1)*(lmin_file+1)
-    
+        ghcs = _compute_gh_cs(gh,lo_a_cs,lmax,lmin,t,llo,lmin_file,mmax)
+      
+        rpow = r**(l0-s*(l_arr))
 
         for l in range(lmin,lmax+1):#degree loop
-          rpow = rf(l)
-          #m=0 #=> sin(mX)=0,cos(mX)=1 out1=X*m=0
-          Bnec[t,X,la] -= PdP[1,l,0]*rpow*(l+2)*(gh[t,gh_i])
-          #Bnec[t,Y,la]+=0
-          Bnec[t,Z,la] += P[l,0]*rpow*(gh[t,gh_i])*(l+1)*(l+2)
-          gh_i+=1
-          for m in range(1,min(l+1,mmax+1)): #order loop
-            Bnec[t,X,la] -= PdP[1,l,m]*rpow*(l+2)\
-              *(gh[t,gh_i]*lo_a_cs[m,0] + gh[t,gh_i+1]*lo_a_cs[m,1])  
         
-            Bnec[t,Y,la] -= (PdP[0,l,m]*cos_th_inv*rpow*m*(l+1)\
-              *(gh[t,gh_i]*lo_a_cs[m,1] - gh[t,gh_i+1]*lo_a_cs[m,0])) 
+          Bnec[t,X,la] += s*rpow[li]*(ghcs[li,m,0]*PdP[1,l,m,u]*(l+isrc+s)).sum(0)
+
+          Bnec[t,Y,la] -= rpow*(ghcs[li,m,1]*m[:,u]*s_inv\
+              *(l+1+isrc)*PdP[0,l,m,u])
+
           
-            Bnec[t,Z,la] += PdP[0,l,m]*rpow*(l+1)*(l+2)\
-              *(gh[t,gh_i]*lo_a_cs[m,0] + gh[t,gh_i+1]*lo_a_cs[m,1])  
-            gh_i+=2
+          Bnec[t,Z,la] += rpow*(ghcs[li,m,0]\
+              *(l+isrc)*(l+isrc+s)*PdP[0,l,m,u]).sum(0)
 
   return Bnec 
 
 
-   
+def _compute_gh_cs(gh,cs_lon,lmax,lmin,t_idx,llo,lmin_file=1,mmax=-1):
+  
+  ghcs = np.zeros((lmax+1-lmin,mmax+1,2,llo))
+  
+  gh_i = (lmin-1)*(lmin+1) - (lmin_file-1)*(lmin_file+1)
+  for li,l in enumerate(range(lmin,lmax+1)):
+    ghcs[li,0,0] = gh[t_idx,gh_i]
+    gh_i += 1
+    for m in range(1,min(l+1,mmax+1)):
+      ghcs[li,m,0] = gh[t_idx,gh_i  ]*cs_lon[m,0]\
+                   + gh[t_idx,gh_i+1]*cs_lon[m,1]
+      ghcs[li,m,1] = gh[t_idx,gh_i  ]*cs_lon[m,1]\
+                   - gh[t_idx,gh_i+1]*cs_lon[m,0]
+      gh_i += 2
+  return ghcs
 
 #optimizable?
 def _B_nec_spl(inarr,times,outval,der,k,b,c,ext=2):
@@ -698,7 +710,7 @@ def get_Bnec(shc_fn,latitude,longitude,cols='all',lmax=-1,lmin=-1,lmin_file=1,r=
   latitude =np.asarray( latitude)
   longitude=np.asarray(longitude)
   
-  Bnec=_Bnec_core(gh,lmax,lmin,latitude*d2r,longitude*d2r,spline_order,
+  Bnec=_Bnec_core(gh,lmax,lmin,.5*np.pi-latitude*d2r,longitude*d2r,spline_order,
           r,dB,n_times,lmin_file)
   
   if not (t_out or dB):
