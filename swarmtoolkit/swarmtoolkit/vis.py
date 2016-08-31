@@ -323,7 +323,7 @@ def plot_scatter(x,y,param,show=False,fmt_t=True,figsize=plt.rcParams["figure.fi
   return fig,ax
 
 
-def plot_geo(lat,lon,param,ptype='scatter',figsize=plt.rcParams["figure.figsize"],cmap=plt.rcParams["image.cmap"],cbar=True,dark_map=False,show=False,contourlevels=15,log_contour=False,show_lat=True,show_lon=False,show_grd=True,**kwargs):
+def plot_geo(lat,lon,param,ptype='scatter',figsize=plt.rcParams["figure.figsize"],cmap=plt.rcParams["image.cmap"],cbar=True,dark_map=False,show=False,contourlevels=15,log_contour=False,show_lat=True,show_lon=False,show_grid=True,**kwargs):
   """
   Plot parameter on the globe using `mpl_toolkits.basemap.Basemap`.
 
@@ -435,7 +435,7 @@ def plot_geo(lat,lon,param,ptype='scatter',figsize=plt.rcParams["figure.figsize"
       cmesh_kwargs['latlon']=True
 
   fig=plt.figure(figsize=figsize)
-  if show_grd:
+  if show_grid:
     if (mapkw['projection'] not in ('ortho',)) and show_lat:
       m.drawparallels(np.arange(-90,90,30),labels=[1,0,0,0])
     else: 
@@ -479,6 +479,7 @@ def plot_geo(lat,lon,param,ptype='scatter',figsize=plt.rcParams["figure.figsize"
     plt.show()
   return fig,m
 
+
 def save_raw(fig_,fn='raw_img.png',shape_ratio=None,dpi=1):
   """
   Save content of figure to file without axes or padding
@@ -506,7 +507,7 @@ def save_raw(fig_,fn='raw_img.png',shape_ratio=None,dpi=1):
   How to retrieve the image as a numpy.ndarray:
 
   >>> import matplotlib.pyplot as plt
-  >>> img_as_array = plt.imread('raw_img.png',interpolation='nearest')
+  >>> img_as_array = plt.imread('raw_img.png')
 
   Save plotted image normally in matplotlib:
 
