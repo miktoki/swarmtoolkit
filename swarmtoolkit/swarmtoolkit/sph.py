@@ -2,14 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-#from numba import jit
 from scipy.interpolate import splrep,splev
 
 from . import aux 
 
 __all__=[ 'get_Bnec',
           'get_Bparameter',
-          'get_Bgradient',
           'get_index',
           'get_l_maxmin',
           'read_shc']
@@ -169,7 +167,6 @@ def _get_legendre_grad(theta, nmax, mmax, schmidtnormalize=True):
   return PdP
 
 
-#@jit#(cache=True) #uint8(uint32,uint8,uint8)
 def get_l_maxmin(arr_len,lmax=0,lmin=0,suppress=False):
   """
   Semi-brute force attempt to get a reasonable value of lmax 
@@ -501,7 +498,7 @@ def _Bnec_core_grad(gh,lmax,lmin,clat_rad,lon_rad,spline_order,r,dB,n_times,lmin
         rpow = r**(l0-s*(l_arr))
 
         for l in range(lmin,lmax+1):#degree loop
-        
+
           Bnec[t,X,la] += s*rpow[li]*(ghcs[li,m,0]*PdP[1,l,m,u]*(l+isrc+s)).sum(0)
 
           Bnec[t,Y,la] -= rpow*(ghcs[li,m,1]*m[:,u]*s_inv\
@@ -530,7 +527,7 @@ def _compute_gh_cs(gh,cs_lon,lmax,lmin,t_idx,llo,lmin_file=1,mmax=-1):
       gh_i += 2
   return ghcs
 
-#optimizable?
+
 def _B_nec_spl(inarr,times,outval,der,k,b,c,ext=2):
   """Spline for all values of B_nec inside a latitude loop"""
   #a: dimension of B (or dB) ie: Bx,By,Bz
@@ -582,7 +579,7 @@ def get_Bparameter(B,outp='FDI'):
   X,Y,Z = 0,1,2
   for p_i,p in enumerate(outp):
     if p.upper() == 'F':
-      out[p_i] = (B**2).sum(axis=0)
+      out[p_i] = np.sqrt((B**2).sum(axis=0))
     elif p.upper() == 'D':
       out[p_i] = np.arctan(B[Y]/B[X])
     elif p.upper() == 'I':
@@ -591,11 +588,8 @@ def get_Bparameter(B,outp='FDI'):
       out[p_i] = 0
   return out
 
-def get_Bgradient(gradient='X'):#y default compute XYZ, possibly also in time as get_Bparameter?
-  pass
 
-
-def get_Bnec(shc_fn,latitude,longitude,cols='all',lmax=-1,lmin=-1,lmin_file=1,r=1,h=0,t_out=[],k=-1,dB=False,ext=2):
+def get_Bnec(shc_fn_dict,latitude,longitude,cols='all',lmax=-1,lmin=-1,lmin_file=1,r=1,h=0,t_out=[],k=-1,dB=False,gradient='',source='internal',ext=2):
   """
   Compute magnetic field components in NEC-frame from SHC ascii file.
 
@@ -605,8 +599,12 @@ def get_Bnec(shc_fn,latitude,longitude,cols='all',lmax=-1,lmin=-1,lmin_file=1,r=
 
   Parameters
   ----------
-  shc_fn : str
-    Path of input SHC ascii file
+  shc_fn_dict : str
+    Path of input SHC ascii file or dictionary containing fields 
+    ``'coeff'``(gauss coefficents),``'t'``(time[float]) and 
+    ``'lm'``(degree and order pairs) and optionally 'k'(spline
+    order,default 3, will be overwritten if `k` is specified as
+    keyword argument).
   latitude : array_like
     latitude values to evaluate magnetic field at
   longitude : array_like
@@ -645,6 +643,17 @@ def get_Bnec(shc_fn,latitude,longitude,cols='all',lmax=-1,lmin=-1,lmin_file=1,r=
   dB : bool
     Return interpolated magnetic field derivative dB/dt instead of 
     magnetic field (default ``False``).
+  gradient : { '' | 'X' | 'Y' | 'Z'}
+    Compute the gradient of one of the magnetic field components. 
+    Note that solutions are numerically unstable at the poles. This
+    will stack with `dB`, such that if ``bool=True`` and 
+    ``gradient='Y'``, the time derivatives of the gradient of the 
+    east component will be computed. ``''`` implies no gradient
+    (default ``''``).
+  source : { 'internal' | 'external' }
+    determine whether to interpret the SHC file as containing the
+    internal or the external Gaussian coefficients 
+    (default ``'internal'``).
   ext : { 0 | 1 | 2 | 3 }
     If interpolation is performed, determine the behaviour when 
     extrapolating: 
@@ -661,10 +670,17 @@ def get_Bnec(shc_fn,latitude,longitude,cols='all',lmax=-1,lmin=-1,lmin_file=1,r=
 
   See also
   --------
-  get_l_maxmin, read_gh_shc
+  get_l_maxmin, read_shc, read_mma
   
   """
-  gh,spline_order,n_times,times = read_shc(shc_fn,cols)
+  if isinstance(shc_fn_dict,dict):
+    gh = shc_fn_dict['coeff']
+    times = shc_fn_dict['t']
+    lm = shc_fn_dict['lm']
+    lmin_file = min(lm[:,0])
+    spline_order = 3
+    n_times=len(times)
+  gh,spline_order,n_times,times = read_shc(shc_fn_dict,cols)
   if k>0:
     spline_order=k
   
@@ -688,7 +704,6 @@ def get_Bnec(shc_fn,latitude,longitude,cols='all',lmax=-1,lmin=-1,lmin_file=1,r=
   else:
     arr_len = len(gh[0])
 
-  lmax,lmin=get_l_maxmin(arr_len)#use whole array
   
   if lmax>0 or lmin>0:
     for length in range(arr_len,0,-1):
@@ -783,17 +798,4 @@ def mean_sq_vdiff(gh1,gh2,r=1,lmax=-1,lmin=1):
             i+=2
         r12[l-lmin] = (l+1)*ratio**(2*l+4)*dg
     return r12
-#if aux._importable('numba'):
-#    import numba
-    #_get_legendre = numba.guvectorize(
-    #    ['void(float32[:,:,:],float32[:],boolean[:],float32[:,:,:])'],
-    #    '(m,n,p),(),()->(m,n,p)')(_get_legendre)
-    #get_l_maxmin = numba.jit(cache=True)(get_l_maxmin)
-    #_Bnec_core = numba.jit(cache=True)(_Bnec_core)
-    #_B_nec_spl = numba.jit(cache=True)(_B_nec_spl)
-#else:
-    #_get_legendre = np.vectorize(_get_legendre)
-#    pass
 
-#@jit #(cache=True,nogil=True,nopython=True) 
-#(array(float64, 2d, C) x 2)(uint8,uint8,float64,bool)
