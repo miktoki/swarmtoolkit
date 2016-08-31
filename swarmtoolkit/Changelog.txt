@@ -7,7 +7,8 @@ Changelog v 1.2
 - new function save_raw to save content of figure(without axes or padding)
 - new function getCDFattr to access cdf attributes
 - getCDFparamlist now returns list
-- getCDFparams with no params now accesses all params
+- getCDFparams with no params now accesses all params. New keyword argument asdict to return output as a dict.
+
 
 
 Changelog v 1.1:
