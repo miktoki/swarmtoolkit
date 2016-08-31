@@ -22,6 +22,7 @@ __all__ = [ 'concatenate_values',
             'getCDFparamlist',
             'getCDFparams',
             'param_peek',
+            'read_mma',
             'read_sp3',
             'read_EFI_prov_txt',
             'unzip_file',
@@ -41,7 +42,7 @@ def getCDFparams(src,*params,**kwargs):
   src : str
     Path or url of filename(s) or filename directory used to search for
     cdf file. 
-  params : str 
+  params : str, optional
     Names of parameters to be extracted from `src`. If names are not
     known, parameters within cdf files may be accessed using 
     `getCDFparamlist`_. Multiple parameters should be given as 
@@ -51,16 +52,20 @@ def getCDFparams(src,*params,**kwargs):
   Keyword Arguments
   -----------------
     param0 : str
-      specify case-insensitive parameter name to use for filtering of files. If none 
-      specified first parameter in `params` is assumed. Will not be 
-      used unless ``filter_param=True`` is specified. Only supports values included
-      in the dictionary ``swarmtoolkit.aux.PRODUCT_DIC``.
+      specify case-insensitive parameter name to use for filtering of
+      files. If none specified first parameter in `params` is 
+      assumed. Will not be used unless ``filter_param=True`` is 
+      specified. Only supports values included in the dictionary 
+      ``swarmtoolkit.aux.PRODUCT_DIC``.
+    asdict : bool
+      return parameters as dictionaries instead of lists(default ``False``).
 
   Returns
   -------
-  list 
+  list or dict
     `Parameter`_'s as ordered in `params`. If only one parameter is
-    specified, `Parameter`_ will not be contained within a list. 
+    specified, `Parameter`_ will not be contained within a list or 
+    dict. Note that ordering does not apply to dict. 
 
   Notes
   -----
@@ -78,23 +83,27 @@ def getCDFparams(src,*params,**kwargs):
       aux.logger.debug("{} chosen as 'param0'".format(params[0]))
     else:
       kwargs['param0'] = None
-  if 'filter_param' not in kwargs:
-    kwargs['filter_param']=False
+  kwargs['filter_param'] = kwargs.get('filter_param',False)
   kwargs['src']=src
   cdflist=getCDFlist(**kwargs)
   if not params:
-    if 'verbose' not in kwargs:
-      kwargs['verbose'] = False
+    kwargs['verbose'] = kwargs.get('verbose',False)
     params = getCDFparamlist(cdflist[0],**kwargs)
   
   aux.logger.debug("getting cdf files from:\n\t{}"
     .format('\n\t'.join(aux._tolist(src))))
-  p_list=[]
-  if cdflist:
-    for par in params:
-      p_list.append(extract_parameter(cdflist,par,**kwargs))
+  if kwargs.get('asdict',False):
+    p_out={}
+    if cdflist:
+      for par in params:
+        p_out[par]=extract_parameter(cdflist,par,**kwargs)
+  else:
+    p_out=[]
+    if cdflist:
+      for par in params:
+        p_out.append(extract_parameter(cdflist,par,**kwargs))
 
-  return aux._single_item_list_open(p_list)
+  return aux._single_item_list_open(p_out)
 
 
 def unzip_file(input_file,output_loc):
@@ -322,14 +331,14 @@ def getCDFlist(src=None, dst=os.curdir,sort_by_t=False, **kwargs):
   return cdflist
 
 
-def getCDFparamlist(cdflist,cdfsuffix=['DBL','CDF'],unzip=False,verbose=True):
+def getCDFparamlist(cdflist,cdfsuffix=['DBL','CDF'],unzip=False,verbose=True,**kwargs):
     """
     .. _getCDFparamlist:
     
     List parameters in the given files if unique.
 
     Prints a list of parameters for each unique product type based on 
-    filename, and returns a list with corresponding information.
+    filename, and returns a dictionary with corresponding information.
 
     Parameters
     ----------
@@ -347,7 +356,7 @@ def getCDFparamlist(cdflist,cdfsuffix=['DBL','CDF'],unzip=False,verbose=True):
     -------
       dict or list
         dictionary of product parameter lists. If only one product
-        type is found, only a list of parameters is returned.
+        type is found, only a list of parameter is returned.
 
 
     Raises
@@ -391,7 +400,10 @@ def getCDFparamlist(cdflist,cdfsuffix=['DBL','CDF'],unzip=False,verbose=True):
                   "\nList of parameters for file '{}':\n\t{}"
                   .format(os.path.basename(f),'\n\t'
                   .join(map(lambda x:x[0],cdf.items()))))
-              products_listed[prod]=[k for k in cdf.items()]
+              products_listed[prod]=[k[0] 
+                if isinstance(k,(list,tuple)) else k
+                for k in cdf.items()]
+
     return aux._single_item_list_open(products_listed)
 
 
@@ -483,6 +495,7 @@ def getCDFattr(fn,*params,verbose=True,shape=True,fileattr=True):
   #  attr = attr[[next(iter(attr.keys()))]]
   return aux._single_item_list_open(attr)
     
+
 def extract_parameter(cdflist, parameter,**kwargs):
     """
     .. _extract_parameter:
@@ -523,9 +536,11 @@ def extract_parameter(cdflist, parameter,**kwargs):
       CDFError
         if unable to decode any cdf file specified
     """
+    
     aux.logger.debug(
       "Attempt to extract parameter '{}' from cdf file list:\n\t{}"
       .format(parameter,'\n\t'.join(cdflist)))
+
     exdict=dict(cat=True,axis=None)
     exdict.update(kwargs)
     
@@ -548,7 +563,7 @@ def extract_parameter(cdflist, parameter,**kwargs):
         try:
             cdf = pycdf.CDF(f)
         except Exception:
-            aux.logger.error("Failed to decode cdf file '{}'".format(f))
+            aux.logger.error("Failed to decode cdf file '{}'. Ensure that this is a cdf file.".format(f))
             raise
         else:
             lower_keys = {}
@@ -1159,6 +1174,48 @@ def read_sp3(fname,doctype=2,SI_units=True):
     #    [a['x'],a['y'],a['z'],a['t'],a['vx'],a['vy'],a['vz'],a['dt'],t],
     #    names='x,y,z,t,vx,vy,vz,dt,date')
     return [a['x'],a['y'],a['z'],a['vx'],a['vy'],a['vz'],a['dt'],t,header]
+
+
+def read_mma(cdf_fn,source='internal',frame='geo'):
+  """
+  .. _read_mma:
+
+  Read Swarm MMA final products 
+
+  Extract the Gauss coefficients, time values and degree and order as
+  a dictionary from magnetospheric MMA_SHA_2F products. Output can be
+  directly inserted into ``swtoolkit.get_Bnec``.
+
+  Parameters
+  ----------
+  cdf_fn : str
+    path to cdf file.
+  source : { 'internal' | 'external' }, optional
+    specify internal or external model coefficients, ie. 
+    :math:`g_{l,m}` and :math:`h_{l,m}` or :math:`q_{l,m}`
+    and :math:`s_{l,m}` (default ``'internal'``).
+  frame : { 'geo' | 'sm' }, optional
+    specify frame, either Geographic, or Solar Magnetic frame
+    (default ``'geo'``)
+
+  Returns
+  -------
+  dictionary with numpy.ndarrays with keys``'coeff'``,``'t'`` and 
+  ``'lm'``.
+  
+  """
+  pnd = {'source':{'internal':'gh','external':'qs',}[source],
+          'frame':{'geo':'geo','sm':'sm'}[frame]}
+
+  params = '{0}_{1}|t_{0}|nm_{0}'.format(
+                pnd['source'],pnd['frame']).split('|')
+            
+            
+  pdict = getCDFparams(cdf_fn,*params,asdict=True)
+
+  return {'coeff':pdict[params[0]][0],
+          't':pdict[params[1]][0],
+          'lm':pdict[params[2]][:]}
 
 
 def _info_from_filename(fn,key=None):
