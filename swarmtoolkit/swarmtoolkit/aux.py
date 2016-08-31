@@ -91,8 +91,8 @@ def _tolist(obj):
 
 
 def _single_item_list_open(obj):
-  """open return list/dict value if length is 1"""
-  if isinstance(obj,list):
+  """open return list/tuple/dict value if length is 1"""
+  if isinstance(obj,(list,tuple)):
     if len(obj)==1:
       return obj[0]
   if isinstance(obj,dict):
