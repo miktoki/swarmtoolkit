@@ -355,6 +355,7 @@ def get_index(l,m,lmin=1,mmax=-1):
       return idx + (t>0)*t*(t+1)
       
 
+
 def _Bnec_core(gh,lmax,lmin,clat_rad,lon_rad,spline_order,r,dB,n_times,lmin_file=1,mmax=-1,isrc=True):
   """Compute magnetic field in North-East-Center reference system"""
   X,Y,Z = 0,1,2#N,E,C indices
@@ -379,6 +380,14 @@ def _Bnec_core(gh,lmax,lmin,clat_rad,lon_rad,spline_order,r,dB,n_times,lmin_file
 
   m_arr = np.arange(mmax+1)
   l_arr = np.arange(lmin,lmax+1)
+
+  if not isinstance(r,np.ndarray):
+    r = np.full(lla,r)
+  elif len(r)!=lla:
+    aux.logger.error('Unexpected shape of r or h')
+    return
+
+
   u=np.newaxis
   for la in range(lla):#lat_rad loop
     s_inv = 1/np.sin(clat_rad[la])
@@ -386,27 +395,15 @@ def _Bnec_core(gh,lmax,lmin,clat_rad,lon_rad,spline_order,r,dB,n_times,lmin_file
     for t in range(n_times):
       ghcs = _compute_gh_cs(gh,lo_a_cs,lmax,lmin,t,llo,lmin_file,mmax)
       
-      rpow = r**(l0-s*(l_arr))
+      rpow = r[la]**(l0-s*(l_arr))
 
 
       for li,l in enumerate(range(lmin,lmax+1)):#degree loop
-        #rpow = r**(l0-s*(l))
         m = m_arr[:min(l+1,mmax+1)]
         
         Bnec[t,X,la] += rpow[li]*(dP[l,m,u]*ghcs[li,m,0]).sum(0) 
         Bnec[t,Y,la] += rpow[li]* (P[l,m,u]*s_inv*m[:,u]*ghcs[li,m,1]).sum(0)
         Bnec[t,Z,la] -= rpow[li]* (P[l,m,u]*(l+isrc)*s*ghcs[li,m,0]).sum(0) 
-        #m=0 #=> sin(mX)=0,cos(mX)=1 out1=X*m=0
-        #Bnec[t,X,la] += dP[l,0]*rpow*ghcs[li,0,0]
-        #Bnec[t,Y,la]+=0
-        #Bnec[t,Z,la] -= P[l,0]*rpow*(ghcs[li,0,0])*(l+isrc)*s
-        #for m in range(1,min(l+1,mmax+1)): #order loop
-
-          #Bnec[t,X,la] += dP[l,m]*rpow*ghcs[li,m,0]  
-        
-          #Bnec[t,Y,la] += P[l,m]*s_inv*rpow*m*ghcs[li,m,1]
-          
-          #Bnec[t,Z,la] -= P[l,m]*rpow*(l+isrc)*s*ghcs[li,m,0] 
          
   return Bnec 
 
@@ -438,6 +435,15 @@ def _Bnec_core_grad(gh,lmax,lmin,clat_rad,lon_rad,spline_order,r,dB,n_times,lmin
 
   m_arr = np.arange(mmax+1)
   l_arr = np.arange(lmin,lmax+1)
+  
+  if not isinstance(r,np.ndarray):
+    r = np.full(lla,r)
+  elif len(r)!=lla:
+    aux.logger.error('Unexpected shape of r or h')
+    return
+
+
+
   u=np.newaxis
   
   if grad=='N':
@@ -448,7 +454,7 @@ def _Bnec_core_grad(gh,lmax,lmin,clat_rad,lon_rad,spline_order,r,dB,n_times,lmin
       for t in range(n_times):
         ghcs = _compute_gh_cs(gh,lo_a_cs,lmax,lmin,t,llo,lmin_file,mmax)
       
-        rpow = r**(l0-s*(l_arr))
+        rpow = r[la]**(l0-s*(l_arr))
 
         for li,l in enumerate(range(lmin,lmax+1)):#degree loop
           m = m_arr[:min(l+1,mmax+1)]
@@ -470,7 +476,7 @@ def _Bnec_core_grad(gh,lmax,lmin,clat_rad,lon_rad,spline_order,r,dB,n_times,lmin
       for t in range(n_times):
         ghcs = _compute_gh_cs(gh,lo_a_cs,lmax,lmin,t,llo,lmin_file,mmax)
       
-        rpow = r**(l0-s*(l_arr))
+        rpow = r[la]**(l0-s*(l_arr))
 
         for l in range(lmin,lmax+1):#degree loop
           
@@ -495,7 +501,7 @@ def _Bnec_core_grad(gh,lmax,lmin,clat_rad,lon_rad,spline_order,r,dB,n_times,lmin
       for t in range(n_times):
         ghcs = _compute_gh_cs(gh,lo_a_cs,lmax,lmin,t,llo,lmin_file,mmax)
       
-        rpow = r**(l0-s*(l_arr))
+        rpow = r[la]**(l0-s*(l_arr))
 
         for l in range(lmin,lmax+1):#degree loop
 
@@ -600,10 +606,10 @@ def get_Bnec(shc_fn_dict,latitude,longitude,cols='all',lmax=-1,lmin=-1,lmin_file
   Parameters
   ----------
   shc_fn_dict : str
-    Path of input SHC ascii file or dictionary containing fields 
-    ``'coeff'``(gauss coefficents),``'t'``(time[float]) and 
-    ``'lm'``(degree and order pairs) and optionally 'k'(spline
-    order,default 3, will be overwritten if `k` is specified as
+    Path of input SHC ascii file `or` dictionary containing fields 
+    ``coeff`` (gauss coefficents), ``t`` (time[float]) and 
+    ``lm`` (degree and order pairs) and optionally ``k`` (spline
+    order, default 3, will be overwritten if ``k`` is specified as
     keyword argument).
   latitude : array_like
     latitude values to evaluate magnetic field at
@@ -617,20 +623,22 @@ def get_Bnec(shc_fn_dict,latitude,longitude,cols='all',lmax=-1,lmin=-1,lmin_file
     harmonic and should not be included in `cols`. As such the default
     value ``cols='all'`` corresponds to ``cols=range(2,2+N_times)``, 
     where `N_times` is the number of time snapshots in the file.  
-  lmax, lmin : int, optional
+  lmax,lmin : int, optional
     Maximum and minimum  degree of harmonics :math:`l_{max}` 
     (:math:`l_{min}`). If non-positive, suitable values will be set 
     based on the number of coefficients (default ``-1``).
   lmin_file : int, optional
     Lowest value of degree in SHC file (default ``1``).
-  r : float, optional
+  r : float or np.ndarray, optional
     Fractional radius at which to evaluate magnetic field. This is the
-    radius divided by the reference radius 6371.2 km
+    radius divided by the reference radius 6371.2 km. If `r` is 
+    provided as an array, it must have the same shape as `latitude`
     (see also `h`)(default ``1``).
-  h : float, optional
+  h : float or np.ndarray, optional
     Height(in km) above reference radius 6371.2 km at which to evaluate
     magnetic field. A non-zero value of `h` will overwrite any 
-    value of `r` (default ``0``).
+    value of `r`. If `h` is provided as an array, it must have the
+    same shape as `latitude` (default ``0``).
   t_out : datetime.datetime, scalar or datetime/scalar list, optional
     Times at which to evaluate magnetic field. Float values should 
     correspond to fractional years. If left empty, times will be taken 
