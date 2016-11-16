@@ -1,4 +1,7 @@
+
+
 Changelog v 1.2
+- (v1.2.3): get_Bnec can take parameters r or h as arrays instead of scalars
 - changed names from `swtools` to `swarmtoolkit`
 - new functions moving_std and moving_mean to compute rolling standard deviation and average of an array
 - function plot_basic has been renamed to plot
