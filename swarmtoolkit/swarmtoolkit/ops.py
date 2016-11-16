@@ -63,11 +63,12 @@ def align_param(p1,p2,t1,t2,k=3,align_to=False):
     upsampling, or for handling datasets where one of the parameters is
     not uniformly sampled (default ``False``).
 
+
   Returns
   -------
   tuple 
-    (p1',p2',t) where `p1'` and `p2'` are sampled at `t` instead of at 
-    `t1` or `t2`. p1',p2' and t are `numpy.ndarray's`. As only the 
+    (p1,p2,t) where `p1` and `p2` are sampled at `t` instead of at 
+    `t1` or `t2`. p1,p2 and t are `numpy.ndarray's`. As only the 
     temporal overlap is utilized, the temporal span of the array will
     in general be less than or equal to the smallest temporal span of
     the two.
@@ -75,7 +76,9 @@ def align_param(p1,p2,t1,t2,k=3,align_to=False):
   Raises
   ------ 
   ValueError
-  
+        
+    
+
       - if respective p,t pairs are not of same length.
       - if length of t array is less than spline order.
       - if time arrays are not ordered ascending.
