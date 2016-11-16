@@ -42,7 +42,7 @@ For ease of use, the abbreviation ``st`` is suggested for `swarmtoolkit`:
     >>> st.plot([0,1,2],[2,1,0])
 """
 
-__version__ = '1.2.2'
+__version__ = '1.2.3'
 
 import sys as _sys
 if _sys.version_info[0]<3:
