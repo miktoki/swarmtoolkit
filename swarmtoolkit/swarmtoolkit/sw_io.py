@@ -593,9 +593,14 @@ def extract_parameter(cdflist, parameter,**kwargs):
                   .format(parameter, f))
                 values = cdf[parameter][...]
             if values is not None:
-              if values[0] is not None:
-                values_container[prod].append(values)
-                unit=u
+              #if hasattr(values,'__len__'):#Check if not scalar:
+              values_container[prod].append(values)
+              unit=u
+              #else:
+              #  values_container[prod].append(np.array(values,ndmin=1))
+              #  unit=u
+                
+                
             cdf.close()
       if not found:
         aux.logger.info(
@@ -638,12 +643,12 @@ def concatenate_values(*an,axis=None):
           axis=i
           break
 
-            
-  if axis>len(sh_1):
-    axis=None#flatten arrays #behaviour not documented on numpy doc 
-    aux.logger.debug(
-      "axis value too high: {}>{}, might result in flattened array"
-      .format(axis,len(sh_1)))
+  if axis is not None:          
+    if axis>len(sh_1):
+        axis=None#flatten arrays #behaviour not documented on numpy doc 
+        aux.logger.debug(
+        "axis value too high: {}>{}, might result in flattened array"
+        .format(axis,len(sh_1)))
   if not similar:
     aux.logger.error("Some of the array's could not be concatenated")
     raise ValueError

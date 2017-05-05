@@ -376,6 +376,7 @@ def debug_info(activate=1):
   """
   if activate>0:
     logger.setLevel(logging.DEBUG)
+    logger.info("Displaying debug information")
   elif activate<0:
     logger.setLevel(logging.CRITICAL)
   else:
