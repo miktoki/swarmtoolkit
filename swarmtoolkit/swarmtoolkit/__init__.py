@@ -51,8 +51,8 @@ if _sys.version_info[0]<3:
   .format(*_sys.version_info[:3]))
 del _sys
 
-from . import aux
-from .aux import *
+from . import auxiliary
+from .auxiliary import *
 from . import sw_io
 from .sw_io import *
 from . import ops
@@ -65,13 +65,13 @@ from .vis import *
 
 
 __all__=[]
-__all__.extend(aux.__all__)
+__all__.extend(auxiliary.__all__)
 __all__.extend(sw_io.__all__)
 __all__.extend(ops.__all__)
 __all__.extend(sph.__all__)
 __all__.extend(vis.__all__)
 
-aux._set_sw_logger()
+auxiliary._set_sw_logger()
 
 
 

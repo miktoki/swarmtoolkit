@@ -12,7 +12,7 @@ from scipy.interpolate import InterpolatedUnivariateSpline,RectSphereBivariateSp
 from scipy.signal import savgol_filter
 
 
-from . import aux
+from . import auxiliary
 
 
 __all__=[ 'align_param',
@@ -102,12 +102,12 @@ def align_param(p1,p2,t1,t2,k=3,align_to=False):
   t_dt=False
   k=int(k)
   if len(t1)<=k or len(t2)<=k:
-    aux.logger.error(
+    auxiliary.logger.error(
       'Input arrays have length {} and {}, need at least a length of {}'
       .format(len(t1),len(t2),1+k))
     raise ValueError
   if len(p1)!=len(t1) or len(p2)!=len(t2):
-    aux.logger.error(
+    auxiliary.logger.error(
       'Incompatible lengths of parameter to time array: p1:{}!=t1:{} or p2:{}!=t2:{}'
       .format(len(p1),len(t1),len(p2),len(t2)) )
     raise ValueError
@@ -127,12 +127,12 @@ def align_param(p1,p2,t1,t2,k=3,align_to=False):
   #np.roll and bool check for values <=0
   #but then one would have to take into account seconds as well
   if d1d<0 or d2d<0:
-      aux.logger.error(
+      auxiliary.logger.error(
         't1 or t2 object is not ordered ascending. Aborting align_param')
       raise ValueError
       
     
-  if abs(aux._from_timedelta((d1-d2)))<1e-5:
+  if abs(auxiliary._from_timedelta((d1-d2)))<1e-5:
     #approx equally sampled, only need to shift and crop array
     nansum1=np.sum(p1!=p1)
     nansum2=np.sum(p2!=p2)
@@ -145,30 +145,30 @@ def align_param(p1,p2,t1,t2,k=3,align_to=False):
       p_lf,t_lf=p2,t2
       lf_eq_1=False
     
-    aux.logger.debug(
+    auxiliary.logger.debug(
       'Approximately equally sampled. Sampling diff in us: {}'
-      .format(abs(aux._from_timedelta((d1-d2),1e6))))
+      .format(abs(auxiliary._from_timedelta((d1-d2),1e6))))
   else:
-    if aux._from_timedelta(d1)<aux._from_timedelta(d2):
+    if auxiliary._from_timedelta(d1)<auxiliary._from_timedelta(d2):
       #if d1 higher frequency:
       p_hf,t_hf=p1,t1
       p_lf,t_lf=p2,t2
       lf_eq_1=False
-      aux.logger.debug(
+      auxiliary.logger.debug(
         'p1 more frequent than p2. Diff in us: {}'
-        .format(abs(aux._from_timedelta((d1-d2),1e6))))
+        .format(abs(auxiliary._from_timedelta((d1-d2),1e6))))
     else:
       p_hf,t_hf=p2,t2
       p_lf,t_lf=p1,t1
       lf_eq_1=True
-      aux.logger.debug(
+      auxiliary.logger.debug(
         'p2 more frequent than p1. Diff in us: {}'
-        .format(abs(aux._from_timedelta((d1-d2),1e6))))
+        .format(abs(auxiliary._from_timedelta((d1-d2),1e6))))
   if align_to:
     p_lf,t_lf=p1,t1
     p_hf,t_hf=p2,t2
     lf_eq_1=True
-    aux.logger.debug('p2 being aligned to p1')
+    auxiliary.logger.debug('p2 being aligned to p1')
   
   
   lh,ll=len(t_hf),len(t_lf)
@@ -197,8 +197,8 @@ def align_param(p1,p2,t1,t2,k=3,align_to=False):
   if not np.array_equal(t_lf,t_hf):
     t0=t_hf[0]
     if t_dt:#if datetime: turn to float
-      t_sec_hf=aux._to_sec_v(t_hf-t0)
-      t_sec_lf=aux._to_sec_v(t_lf-t0) 
+      t_sec_hf=auxiliary._to_sec_v(t_hf-t0)
+      t_sec_lf=auxiliary._to_sec_v(t_lf-t0) 
     else:
       t_sec_hf=t_hf
       t_sec_lf=t_lf
@@ -207,7 +207,7 @@ def align_param(p1,p2,t1,t2,k=3,align_to=False):
     try:
       p_hf=f_hf(t_sec_lf)
     except ValueError:
-      aux.logger.error('Unable to interpolate. Check that arrays have'+\
+      auxiliary.logger.error('Unable to interpolate. Check that arrays have'+\
       ' finite values and have some overlap in time. Aborting...')
       raise
   #return in same order they came in:
@@ -232,18 +232,18 @@ def _shift_param(p1,p2,t1,t2,delta_t):
     
     #dt is how much to move t1 relative to t2
     """
-    dt_us=aux._from_timedelta(delta_t,1e6)
-    delta_t_dt = aux._to_timedelta(dt_us,'microseconds')
-    step=aux._from_timedelta(t1[1]-t1[0],1e6)#step size
+    dt_us=auxiliary._from_timedelta(delta_t,1e6)
+    delta_t_dt = auxiliary._to_timedelta(dt_us,'microseconds')
+    step=auxiliary._from_timedelta(t1[1]-t1[0],1e6)#step size
     
     #step correction 
     step_c=(dt_us%step)
-    step_c_dt=aux._to_timedelta(step_c,'microseconds')
+    step_c_dt=auxiliary._to_timedelta(step_c,'microseconds')
     len1,len2=len(t1),len(t2)
     
     if (t1[-1]+delta_t_dt)<t2[0] or (t1[0]+delta_t_dt)>t2[-1]:
         #will not work due to no overlap
-        aux.logger.warning(
+        auxiliary.logger.warning(
           'No overlap between the two time series for given shift: {} seconds'
           .format(dt_us/1e6))
         return 
@@ -396,7 +396,7 @@ def shift_param(p1,p2,t1,t2,delta_t=0,dt_lim=(-20,20),v=1,spline_points=1e7,eval
 
     len1,len2=len(t1),len(t2)
     if len(p1)!=len(t1) or len(p2)!=len(t2):
-      aux.logger.error(
+      auxiliary.logger.error(
         'incompatible lengths of parameter to time array:'+\
         ' p1:{}!=t1:{} or p2:{}!=t2:{}'
         .format(len(p1),len(t1),len(p2),len(t2)) )
@@ -413,7 +413,7 @@ def shift_param(p1,p2,t1,t2,delta_t=0,dt_lim=(-20,20),v=1,spline_points=1e7,eval
 
     if eval_width is not None:
       if eval_width<=0 or eval_width>len2:
-        aux.logger.error(
+        auxiliary.logger.error(
           "eval_width must be a positive integer less"+\
           " than the length of p2, you provided {}.".format(eval_width))
         raise ValueError
@@ -426,12 +426,12 @@ def shift_param(p1,p2,t1,t2,delta_t=0,dt_lim=(-20,20),v=1,spline_points=1e7,eval
 
     if hasattr(dt_lim,'__iter__'):
       if len(dt_lim)<2:
-        aux.logger.error("dt_lim needs to be of length 2")
+        auxiliary.logger.error("dt_lim needs to be of length 2")
         raise IndexError
       for i in range(2):
         if dt_lim[i] is None:
           if no_dt:
-            aux.logger.error(
+            auxiliary.logger.error(
               "If no delta_t is provided dt_lim tuple must be provided") 
             raise ValueError
         if isinstance(dt_lim[i],dt.timedelta):
@@ -443,7 +443,7 @@ def shift_param(p1,p2,t1,t2,delta_t=0,dt_lim=(-20,20),v=1,spline_points=1e7,eval
           dt_low=delta_t - ((1-eval_ratio)/2)*abs(delta_t)
           dt_high=delta_t + ((1-eval_ratio)/2)*abs(delta_t)
           if v>0:
-            aux.logger.info(
+            auxiliary.logger.info(
               "dt_lim has been changed from "+\
               "{} to {} due to specified delta_t being outside range."
               .format(dt_lim,(dt_low,dt_high)))
@@ -451,14 +451,14 @@ def shift_param(p1,p2,t1,t2,delta_t=0,dt_lim=(-20,20),v=1,spline_points=1e7,eval
     else:#assume number: max deviation from delta_t symmetrically
       if dt_lim is not None:
         if dt_lim<=0:
-          aux.logger.error(
+          auxiliary.logger.error(
             "Float value dt_lim:{} out of bounds.".format(dt_lim)+\
             " Needs to be positive or tuple of numbers or timedelta objects.")
           raise ValueError
         dt_lim=(delta_t-dt_lim,delta_t+dt_lim)
       else:
         if no_dt:
-          aux.logger.error(
+          auxiliary.logger.error(
             "If no delta_t is provided dt_lim tuple must be provided") 
           raise ValueError
         dt_lim=(delta_t - ((1-eval_ratio)/2)*abs(delta_t),
@@ -484,7 +484,7 @@ def shift_param(p1,p2,t1,t2,delta_t=0,dt_lim=(-20,20),v=1,spline_points=1e7,eval
       edge_dt_low =int(edge_dt_low //step + bool(abs(edge_dt_low %step)>tol))
       edge_dt_high=int(edge_dt_high//step + bool(abs(edge_dt_high%step)>tol))
 
-      aux.logger.debug(
+      auxiliary.logger.debug(
         "Step size is {} seconds. Edges need {}".format(step,edge_dt_low)+\
         "+{} steps to accommodate dt_lim values".format(edge_dt_high))
     
@@ -492,18 +492,18 @@ def shift_param(p1,p2,t1,t2,delta_t=0,dt_lim=(-20,20),v=1,spline_points=1e7,eval
       if len2<(eval_width+edge_dt_low+edge_dt_high): 
         eval_width=len2-(edge_dt_low+edge_dt_high)
         eval_ratio=eval_width/len1
-        aux.logger.debug(
+        auxiliary.logger.debug(
           "eval_width adjusted to {} due to edge requirements"
           .format(eval_width))
         if eval_width<1:
-          aux.logger.error(
+          auxiliary.logger.error(
             '\n\t'.join((
               'too few evaluation points. Consider reducing'+\
               ' spline_points or the span of dt_lim.'),
               'Number of  spline points: {}'.format(l_spl)+\
               'dt_lim: {}'.format(dt_lim)))
           is_valid=False
-          if aux._is_interactive():
+          if auxiliary._is_interactive():
             print("Insert new values"+\
             " (If none specified, default values will be chosen")
             
@@ -521,10 +521,10 @@ def shift_param(p1,p2,t1,t2,delta_t=0,dt_lim=(-20,20),v=1,spline_points=1e7,eval
                   dt_lim0_tmp.strip() or dt_lim1_tmp.strip()):
                 raise ValueError
             except KeyboardInterrupt:
-                aux.logger.error("KeyboardInterrupt - aborting...")
+                auxiliary.logger.error("KeyboardInterrupt - aborting...")
                 raise 
             except Exception:
-              aux.logger.error(
+              auxiliary.logger.error(
                 "No input variables or incorrect input variables")
               raise
           else:
@@ -532,7 +532,7 @@ def shift_param(p1,p2,t1,t2,delta_t=0,dt_lim=(-20,20),v=1,spline_points=1e7,eval
               "too few evaluation points."+\
               " Consider reducing spline_points or the span of dt_lim") 
         if eval_width<10 and v:
-          aux.logger.warning(
+          auxiliary.logger.warning(
             'Only {} points used to evaluate goodness of fit.'
             .format(eval_width))
       
@@ -555,12 +555,12 @@ def shift_param(p1,p2,t1,t2,delta_t=0,dt_lim=(-20,20),v=1,spline_points=1e7,eval
 
     p1_p=p1[(len1-l_spl)//2:(len1+l_spl)//2]
     t1_p=t1[(len1-l_spl)//2:(len1+l_spl)//2]
-    aux.logger.debug(
+    auxiliary.logger.debug(
       "number of spline points changed from '{}' to '{}'"
       .format(spline_points,l_spl))
     
     t0=t1_p[0]#arbitrarily chosen reference time
-    t_sec1=aux._to_sec_v(t1_p-t0)
+    t_sec1=auxiliary._to_sec_v(t1_p-t0)
     p1_spl_f=InterpolatedUnivariateSpline(t_sec1,p1_p,k=k,ext=ext)
     #ext: 0=extrapolate;1=0;2=valueerror,3=const
    
@@ -570,7 +570,7 @@ def shift_param(p1,p2,t1,t2,delta_t=0,dt_lim=(-20,20),v=1,spline_points=1e7,eval
     eval_end  =len2//2+(use_width//2 - edge_dt_high) #-1
     if eval_start<0:
       eval_start=0
-    t_sec2=aux._to_sec_v(t2[eval_start:eval_end]-t0) 
+    t_sec2=auxiliary._to_sec_v(t2[eval_start:eval_end]-t0) 
    
     fixing_vars = (
       ('Length of array splined',l_spl),
@@ -585,7 +585,7 @@ def shift_param(p1,p2,t1,t2,delta_t=0,dt_lim=(-20,20),v=1,spline_points=1e7,eval
       ('eval_end index+1',eval_end)
       )
     
-    aux.logger.debug(
+    auxiliary.logger.debug(
       'some variables related to the fitting listed:\n\t'+'\n\t'
       .join(('{:20s}:{:20s}'.format(fixing_vars[i][0],str(fixing_vars[i][1]))
        for i in range(len(fixing_vars)))))
@@ -604,13 +604,13 @@ def shift_param(p1,p2,t1,t2,delta_t=0,dt_lim=(-20,20),v=1,spline_points=1e7,eval
         dt_candidate=delta_t,
         limit_dt_candidate=dt_lim,
         print_level=bool(v>=2),
-        error_dt_candidate=aux._from_timedelta(t1[1]-t1[0])/10,
+        error_dt_candidate=auxiliary._from_timedelta(t1[1]-t1[0])/10,
         errordef=1)
     
     MAXTRIES=100
     tries=0
     def minuit_fail_warning():
-      aux.logger.warning(
+      auxiliary.logger.warning(
         "Unsuccessfil run of minimization algorithm, last recorded variables"+\
         " are delta_t: {:.4f}, chisq: {}.".format(*last_vars)+\
         " Aborted function 'shift_param'\nCheck that limits are appropriate,"+\
@@ -624,7 +624,7 @@ def shift_param(p1,p2,t1,t2,delta_t=0,dt_lim=(-20,20),v=1,spline_points=1e7,eval
       
         tries+=1
         mout=m.migrad(ncall=imincall)
-        aux.logger.debug(
+        auxiliary.logger.debug(
           "migrad did not converge; retrying. last vars:"+\
           " delta_t={:.4f} chisq:{}".format(*last_vars))
         if tries==MAXTRIES:
@@ -654,19 +654,19 @@ def shift_param(p1,p2,t1,t2,delta_t=0,dt_lim=(-20,20),v=1,spline_points=1e7,eval
     
 
     if not is_valid:
-        aux.logger.info(
+        auxiliary.logger.info(
           "Validity of solution is questionable; iminuit output dump: {}"
           .format(mout)) 
     elif mout['at_lower_limit']:
-      aux.logger.info(
+      auxiliary.logger.info(
         "delta_t converged to solution near lower limit, consider rerunning"+\
         " with new limits")
     elif mout['at_upper_limit']:
-      aux.logger.info(
+      auxiliary.logger.info(
         "delta_t converged to solution near upper limit, consider rerunning"+\
         " with new limits")
     if v:
-      aux.logger.info('output delta_t: {}'.format(delta_t))
+      auxiliary.logger.info('output delta_t: {}'.format(delta_t))
     
     if show:
       try:
@@ -696,11 +696,11 @@ def where_overlap(t1,t2,delta_t=0):
     if not (isinstance(t1[0],dt.datetime) and isinstance(t2[0],dt.datetime)):
       raise ValueError
   except Exception:
-    aux.logger.error("{} was not supplied datetime arrays correctly"
+    auxiliary.logger.error("{} was not supplied datetime arrays correctly"
       .format(where_overlap.__name__))
     raise 
 
-  return spacepy.toolbox.tOverlap(t1+aux._to_timedelta(delta_t,'seconds'),t2,
+  return spacepy.toolbox.tOverlap(t1+auxiliary._to_timedelta(delta_t,'seconds'),t2,
             presort=True)
 
 
@@ -740,7 +740,7 @@ def fourier_transform(param,dt_t,norm=None):
     if isinstance(dt_t[0],dt.datetime):
       dt_t=dt_t[1]-dt_t[0]
     else:
-      aux.logger.error('Content of dt_t array is not datetime objects')
+      auxiliary.logger.error('Content of dt_t array is not datetime objects')
       raise TypeError
   if isinstance(dt_t,dt.timedelta):
     dt_t=dt_t.total_seconds()
@@ -1043,7 +1043,7 @@ def map_of_means(param,lat,lon,step=1,lat_bounds=[-90,90],lon_bounds=[-180,180],
           .format(step,step_inv),
         "Number of points: {}".format(N),
         "Kernel width: {}".format(kernel_w)])
-  aux.logger.debug(msg)
+  auxiliary.logger.debug(msg)
 
   g = Box2DKernel(kernel_width)
   conv=convolve_fft(mean_bin,g,**kwargs)

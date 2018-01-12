@@ -4,7 +4,7 @@
 import numpy as np
 from scipy.interpolate import splrep,splev
 
-from . import aux 
+from . import auxiliary 
 
 __all__=[ 'get_Bnec',
           'get_Bparameter',
@@ -194,7 +194,7 @@ def get_l_maxmin(arr_len,lmax=0,lmin=0,suppress=False):
       return lmax,lmin
     else:
       if not suppress:
-        aux.logger.error("(lmax,lmin) pair are unsuitable.")
+        auxiliary.logger.error("(lmax,lmin) pair are unsuitable.")
       raise ValueError
   #find lmin given lmax
   if lmax:
@@ -202,7 +202,7 @@ def get_l_maxmin(arr_len,lmax=0,lmin=0,suppress=False):
       if arr_len==(lmax*(lmax+2)-(lmin-1)*(lmin+1)):
         return lmax,lmin
     if not suppress:
-      aux.logger.error("Could not find suitable lmin given lmax")
+      auxiliary.logger.error("Could not find suitable lmin given lmax")
     raise ValueError
     
   lmax_est=int(np.sqrt(arr_len))
@@ -216,7 +216,7 @@ def get_l_maxmin(arr_len,lmax=0,lmin=0,suppress=False):
       if arr_len==(lmax*(lmax+2)-(lmin-1)*(lmin+1)):
         return lmax,lmin
     if not suppress:
-      aux.logger.error("Could not find suitable lmin given lmax")
+      auxiliary.logger.error("Could not find suitable lmin given lmax")
     raise ValueError
     
   #find both lmax and lmin
@@ -230,7 +230,7 @@ def get_l_maxmin(arr_len,lmax=0,lmin=0,suppress=False):
         return lmax,lmin
    
   if not suppress:
-    aux.logger.error("Could not find a suitable (lmax,lmin) pair")
+    auxiliary.logger.error("Could not find a suitable (lmax,lmin) pair")
   raise ValueError
 
 
@@ -384,7 +384,7 @@ def _Bnec_core(gh,lmax,lmin,clat_rad,lon_rad,spline_order,r,dB,n_times,lmin_file
   if not isinstance(r,np.ndarray):
     r = np.full(lla,r)
   elif len(r)!=lla:
-    aux.logger.error('Unexpected shape of r or h')
+    auxiliary.logger.error('Unexpected shape of r or h')
     return
 
 
@@ -439,7 +439,7 @@ def _Bnec_core_grad(gh,lmax,lmin,clat_rad,lon_rad,spline_order,r,dB,n_times,lmin
   if not isinstance(r,np.ndarray):
     r = np.full(lla,r)
   elif len(r)!=lla:
-    aux.logger.error('Unexpected shape of r or h')
+    auxiliary.logger.error('Unexpected shape of r or h')
     return
 
 
@@ -579,7 +579,7 @@ def get_Bparameter(B,outp='FDI'):
     shape = [len(outp)] + list(Bsh[1:])
     out = np.empty(shape)
   else:
-    aux.logger.error("Unexpected shape of input {}".format(Bsh))
+    auxiliary.logger.error("Unexpected shape of input {}".format(Bsh))
     return
 
   X,Y,Z = 0,1,2
@@ -696,10 +696,10 @@ def get_Bnec(shc_fn_dict,latitude,longitude,cols='all',lmax=-1,lmin=-1,lmin_file
     #if interpolation is intended: 
     #fit interpolation degree to what is possible
     spline_order=min(spline_order,n_times-1)
-    aux.logger.info(
+    auxiliary.logger.info(
       'as n_times set is {} > spline order, spline order is set to: {}'
       .format(n_times,spline_order))  
-  aux.logger.debug(
+  auxiliary.logger.debug(
     'gh has shape: {}, n_times(chosen number of columns):'
     .format(np.shape(gh))+\
     ' {}, spline_order: {}'.format(n_times,spline_order))
@@ -724,7 +724,7 @@ def get_Bnec(shc_fn_dict,latitude,longitude,cols='all',lmax=-1,lmin=-1,lmin_file
 
   else:
     lmax,lmin=get_l_maxmin(arr_len,lmin=lmin_file)
-  aux.logger.debug(
+  auxiliary.logger.debug(
     'lmax and lmin set to be lmax={},lmin={}'.format(lmax,lmin))
   
   
@@ -739,7 +739,7 @@ def get_Bnec(shc_fn_dict,latitude,longitude,cols='all',lmax=-1,lmin=-1,lmin_file
   if not (t_out or dB):
     return Bnec
   else:
-      t_out=aux._to_dec_year_list(t_out)
+      t_out=auxiliary._to_dec_year_list(t_out)
       llo,lla=len(longitude),len(latitude)
   
       if (not t_out) and dB:

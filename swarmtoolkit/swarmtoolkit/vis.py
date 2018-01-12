@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.basemap import Basemap
 
-from . import aux
+from . import auxiliary
   
 __all__ = [ 'plot_align',
             'plot',
@@ -97,7 +97,7 @@ def plot(x,y,*xy,show=False,fmt_t=True,figsize=plt.rcParams["figure.figsize"],lo
   
   """
   fig,ax=plt.subplots(figsize=figsize)
-  legends=aux._tolist(legends)
+  legends=auxiliary._tolist(legends)
   if fmt_t and isinstance(x[0],dt.datetime):
     fig.autofmt_xdate()
     #plt.xticks(rotation=70)
@@ -199,7 +199,7 @@ def plot_twinx(x,y,*xy,show=False,logy=False,legends=[],lloc='best',lall=True,lb
     ax=plt.gca()
 
   ax2=ax.twinx()
-  legends=aux._tolist(legends)
+  legends=auxiliary._tolist(legends)
   
   if colors:
     ax2.set_color_cycle(colors)
@@ -526,4 +526,4 @@ def save_raw(fig_,fn='raw_img.png',shape_ratio=None,dpi=1):
   ax.set_axis_off()
 
   plt.savefig(fn,dpi=dpi)
-  aux.logger.info("Image '{}' created".format(fn))
+  auxiliary.logger.info("Image '{}' created".format(fn))

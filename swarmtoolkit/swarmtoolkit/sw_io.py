@@ -13,7 +13,7 @@ import ftplib
 import numpy as np
 import spacepy.pycdf as pycdf
 
-from . import aux
+from . import auxiliary
 
 __all__ = [ 'concatenate_values',
             'dl_ftp',
@@ -56,7 +56,7 @@ def getCDFparams(src,*params,**kwargs):
       files. If none specified first parameter in `params` is 
       assumed. Will not be used unless ``filter_param=True`` is 
       specified. Only supports values included in the dictionary 
-      ``swarmtoolkit.aux.PRODUCT_DIC``.
+      ``swarmtoolkit.auxiliary.PRODUCT_DIC``.
     asdict : bool
       return parameters as dictionaries instead of lists(default ``False``).
 
@@ -80,7 +80,7 @@ def getCDFparams(src,*params,**kwargs):
   if 'param0' not in kwargs:
     if params:
       kwargs['param0']=params[0]
-      aux.logger.debug("{} chosen as 'param0'".format(params[0]))
+      auxiliary.logger.debug("{} chosen as 'param0'".format(params[0]))
     else:
       kwargs['param0'] = None
   kwargs['filter_param'] = kwargs.get('filter_param',False)
@@ -90,8 +90,8 @@ def getCDFparams(src,*params,**kwargs):
     kwargs['verbose'] = kwargs.get('verbose',False)
     params = getCDFparamlist(cdflist[0],**kwargs)
   
-  aux.logger.debug("getting cdf files from:\n\t{}"
-    .format('\n\t'.join(aux._tolist(src))))
+  auxiliary.logger.debug("getting cdf files from:\n\t{}"
+    .format('\n\t'.join(auxiliary._tolist(src))))
   if kwargs.get('asdict',False):
     p_out={}
     if cdflist:
@@ -103,7 +103,7 @@ def getCDFparams(src,*params,**kwargs):
       for par in params:
         p_out.append(extract_parameter(cdflist,par,**kwargs))
 
-  return aux._single_item_list_open(p_out)
+  return auxiliary._single_item_list_open(p_out)
 
 
 def unzip_file(input_file,output_loc):
@@ -132,10 +132,10 @@ def unzip_file(input_file,output_loc):
             all_extracted=False
         if not all_extracted:
           z.extractall(output_loc)
-          aux.logger.debug("Unzipping file '{}' in directory '{}'"
+          auxiliary.logger.debug("Unzipping file '{}' in directory '{}'"
             .format(input_file,output_loc))
     except Exception:
-      aux.logger.error(
+      auxiliary.logger.error(
         "Unable to unzip file {} to location {}\n\t".format(input_file,output_loc) +
         "Ensure that the files and locations are valid and that " +
         "the file is not corrupted"
@@ -234,7 +234,7 @@ def getCDFlist(src=None, dst=os.curdir,sort_by_t=False, **kwargs):
   if not os.path.exists(dst):
     if len(os.path.basename(dst).split('.'))<2:
       os.makedirs(dst)
-      aux.logger.debug("creating directory: '{}'".format(dst))
+      auxiliary.logger.debug("creating directory: '{}'".format(dst))
   
   if src is None:
     src = os.curdir
@@ -242,12 +242,12 @@ def getCDFlist(src=None, dst=os.curdir,sort_by_t=False, **kwargs):
           src=src,dst=dst,filter_param=False,param0=None,sat=None,
           period=None,start_t=None,end_t=None,duration=None)
   zp.update(kwargs)
-  zp['cdfsuffix']=aux._tolist(zp['cdfsuffix'])
+  zp['cdfsuffix']=auxiliary._tolist(zp['cdfsuffix'])
   if not 'filter_param' in zp:
     zp['param0']=None
   if zp['param0']: zp['param0']=str(zp['param0']).lower()
   if not zp['period']:
-    zp['period']=aux._set_period(zp['start_t'],zp['end_t'],zp['duration'])
+    zp['period']=auxiliary._set_period(zp['start_t'],zp['end_t'],zp['duration'])
   
   if not zp['use_ftp'] and 'user' not in zp:
     if isinstance(zp['src'],str):
@@ -256,25 +256,25 @@ def getCDFlist(src=None, dst=os.curdir,sort_by_t=False, **kwargs):
       for i,zloc in enumerate(zp['src']):
         zp['src'][i]=os.path.abspath(zloc)
   zp['dst']=os.path.abspath(zp['dst'])
-  aux.logger.debug('kwargs set to {}'.format(zp))
+  auxiliary.logger.debug('kwargs set to {}'.format(zp))
   #if src is directory: glob it for cdf's otherwise for zip's
   def _locate_cdfs(loc):
     cdfl=[]
     zipl=[]
     if os.path.isdir(loc):
-      aux.logger.debug(
+      auxiliary.logger.debug(
         "searching through '{}' for CDF's or ZIP's".format(loc))
       for suffix in zp['cdfsuffix']:
         cdfl += glob.glob(loc+"/*.{}".format(suffix.upper())) +\
                 glob.glob(loc+"/*.{}".format(suffix.lower()))
       if cdfl:
-        aux.logger.debug(
+        auxiliary.logger.debug(
           "Files with suffix '{}' found:\n\t{}"
           .format("' or '".join(zp['cdfsuffix']),'\n\t'.join(cdfl)))
       if (not cdfl) or zp['includezip']:
         zipl+=glob.glob(loc+"/*.ZIP") + glob.glob(loc+"/*.zip")
         if zipl:
-          aux.logger.debug("Found following zip files:\n\t{}"
+          auxiliary.logger.debug("Found following zip files:\n\t{}"
             .format('\n\t'.join(zipl)))
         
     #if zipfile
@@ -288,7 +288,7 @@ def getCDFlist(src=None, dst=os.curdir,sort_by_t=False, **kwargs):
     for z in zipl:
       cdfl+=_get_zip_content(z,**zp)
 
-    #aux.logger.debug("CDF's found in '{}':\n\t{}"
+    #auxiliary.logger.debug("CDF's found in '{}':\n\t{}"
     #  .format(loc,'\n\t'.join(cdfl)))
     
     return cdfl
@@ -296,7 +296,7 @@ def getCDFlist(src=None, dst=os.curdir,sort_by_t=False, **kwargs):
   cdflist=[]
   if isinstance(zp['src'],str):
     if zp['use_ftp'] or ('user' in zp):
-        fl=aux._tolist(dl_ftp(zp['src'],**zp))
+        fl=auxiliary._tolist(dl_ftp(zp['src'],**zp))
         if not fl:
           return []
         for fn in fl:
@@ -306,7 +306,7 @@ def getCDFlist(src=None, dst=os.curdir,sort_by_t=False, **kwargs):
   else:
     for loc in zp['src']:
       if zp['use_ftp'] or ('user' in zp):
-        fn=aux._tolist(dl_ftp(zp['src'],**zp))
+        fn=auxiliary._tolist(dl_ftp(zp['src'],**zp))
         if fn:
           cdflist+=_locate_cdfs(fn)
       else:
@@ -316,7 +316,7 @@ def getCDFlist(src=None, dst=os.curdir,sort_by_t=False, **kwargs):
   bn=[os.path.basename(fn) for fn in cdflist]
   for bname in reversed(bn):
     if bn.count(bname)>1:
-      aux.logger.debug('duplicate of {} found. Removing duplicate'.format(bname))
+      auxiliary.logger.debug('duplicate of {} found. Removing duplicate'.format(bname))
       i=bn.index(bname)
       del bn[i],cdflist[i]
 
@@ -327,7 +327,7 @@ def getCDFlist(src=None, dst=os.curdir,sort_by_t=False, **kwargs):
     try:
       cdflist=sorted(cdflist,key=lambda cdfn: _info_from_filename(cdfn)['t0'])
     except Exception: 
-      aux.logger.debug('unable to sort by time due to unexpected filename')
+      auxiliary.logger.debug('unable to sort by time due to unexpected filename')
   return cdflist
 
 
@@ -366,7 +366,7 @@ def getCDFparamlist(cdflist,cdfsuffix=['DBL','CDF'],unzip=False,verbose=True,**k
 
     """
     zp = {'temp':False,'cdfsuffix':cdfsuffix}
-    cdflist=aux._tolist(cdflist)
+    cdflist=auxiliary._tolist(cdflist)
     if len(cdflist)==1 and os.path.isdir(cdflist[0]):
       dirname=cdflist[0] #unnecessary with abspath
       dir_content=os.listdir(dirname)
@@ -384,19 +384,19 @@ def getCDFparamlist(cdflist,cdfsuffix=['DBL','CDF'],unzip=False,verbose=True,**k
           zp['dst'] = os.path.dirname(cdflist[i])
           cdflist.append(_get_zip_content(cdflist.pop(i),**zp))
 
-    aux.logger.debug("CDF files:\n\t{}".format('\n\t'.join(cdflist)))
+    auxiliary.logger.debug("CDF files:\n\t{}".format('\n\t'.join(cdflist)))
     products_listed={}
     for f in cdflist:
         try:
             cdf = pycdf.CDF(f)
         except Exception:
-            aux.logger.error("Failed to decode cdf file '{}'".format(f))
+            auxiliary.logger.error("Failed to decode cdf file '{}'".format(f))
             raise
         else:
             prod=_info_from_filename(f,'product')
             if prod not in products_listed:
               if verbose:
-                aux.logger.info(
+                auxiliary.logger.info(
                   "\nList of parameters for file '{}':\n\t{}"
                   .format(os.path.basename(f),'\n\t'
                   .join(map(lambda x:x[0],cdf.items()))))
@@ -404,7 +404,7 @@ def getCDFparamlist(cdflist,cdfsuffix=['DBL','CDF'],unzip=False,verbose=True,**k
                 if isinstance(k,(list,tuple)) else k
                 for k in cdf.items()]
 
-    return aux._single_item_list_open(products_listed)
+    return auxiliary._single_item_list_open(products_listed)
 
 
 def getCDFattr(fn,*params,verbose=True,shape=True,fileattr=True):
@@ -458,7 +458,7 @@ def getCDFattr(fn,*params,verbose=True,shape=True,fileattr=True):
   try:
     cdf = pycdf.CDF(f)
   except Exception:
-    aux.logger.error("Failed to decode cdf file '{}'".format(f))
+    auxiliary.logger.error("Failed to decode cdf file '{}'".format(f))
     raise
   else:
     if fileattr:
@@ -476,7 +476,7 @@ def getCDFattr(fn,*params,verbose=True,shape=True,fileattr=True):
           if shape:
             attr[p].update({"SHAPE":str(cdf[p])})  
         except Exception:
-          aux.logger.error("Unable to find parameter {} in {}".format(
+          auxiliary.logger.error("Unable to find parameter {} in {}".format(
             p,fn))
           raise KeyError
     cdf.close()
@@ -490,10 +490,10 @@ def getCDFattr(fn,*params,verbose=True,shape=True,fileattr=True):
             s += "\t{}:\n\t\t{}\n".format(vk,vv)
         else:
           s += "\t{}\n".format(v)
-      aux.logger.info(s)
+      auxiliary.logger.info(s)
   #if len(attr)==1:
   #  attr = attr[[next(iter(attr.keys()))]]
-  return aux._single_item_list_open(attr)
+  return auxiliary._single_item_list_open(attr)
     
 
 def extract_parameter(cdflist, parameter,**kwargs):
@@ -537,7 +537,7 @@ def extract_parameter(cdflist, parameter,**kwargs):
         if unable to decode any cdf file specified
     """
     
-    aux.logger.debug(
+    auxiliary.logger.debug(
       "Attempt to extract parameter '{}' from cdf file list:\n\t{}"
       .format(parameter,'\n\t'.join(cdflist)))
 
@@ -547,7 +547,7 @@ def extract_parameter(cdflist, parameter,**kwargs):
     values_container={}
     first=True
     if not cdflist:
-      aux.logger.debug("Empty cdf list: No values extracted")
+      auxiliary.logger.debug("Empty cdf list: No values extracted")
       return None,None,None
     else:
       found = False
@@ -563,7 +563,7 @@ def extract_parameter(cdflist, parameter,**kwargs):
         try:
             cdf = pycdf.CDF(f)
         except Exception:
-            aux.logger.error("Failed to decode cdf file '{}'. Ensure that this is a cdf file.".format(f))
+            auxiliary.logger.error("Failed to decode cdf file '{}'. Ensure that this is a cdf file.".format(f))
             raise
         else:
             lower_keys = {}
@@ -573,22 +573,22 @@ def extract_parameter(cdflist, parameter,**kwargs):
 
             if parameter.lower() in lower_keys.keys():
                 if parameter != lower_keys[parameter.lower()]:
-                    aux.logger.debug(
+                    auxiliary.logger.debug(
                       "Assuming parameter to be '{}' rather than '{}'"
                       .format(lower_keys[parameter.lower()], parameter))
                     parameter = lower_keys[parameter.lower()]
                 try:
                     u = cdf[parameter].attrs['UNITS']
-                    aux.logger.debug(
+                    auxiliary.logger.debug(
                       "Unit '{}' found for parameter '{}' in file '{}'"
                       .format(u, parameter, f))
                 except Exception:
-                    aux.logger.info(
+                    auxiliary.logger.info(
                       "No unit found for parameter '{}' in file '{}'"
                       .format(parameter, f))
 
                 found = True
-                aux.logger.debug(
+                auxiliary.logger.debug(
                   "Found parameter '{}' in file '{}'"
                   .format(parameter, f))
                 values = cdf[parameter][...]
@@ -603,7 +603,7 @@ def extract_parameter(cdflist, parameter,**kwargs):
                 
             cdf.close()
       if not found:
-        aux.logger.info(
+        auxiliary.logger.info(
           "Parameter '{}' not found in file(s): \n\t{}"
           .format(parameter,'\n\t'.join(cdflist)))
         
@@ -615,7 +615,7 @@ def extract_parameter(cdflist, parameter,**kwargs):
             concatenate_values(*values_container[prod],axis=exdict['axis']))
       return Parameter(values,unit,parameter)
     else:
-      return Parameter(aux._tolist(values_container),unit,parameter)
+      return Parameter(auxiliary._tolist(values_container),unit,parameter)
 
 
 def concatenate_values(*an,axis=None):
@@ -626,10 +626,10 @@ def concatenate_values(*an,axis=None):
 
   Concatenate along last axis if none specified."""
   if len(an)==0: 
-    aux.logger.debug('No array given, cannot concatenate')
+    auxiliary.logger.debug('No array given, cannot concatenate')
     return 
   if len(an)==1: 
-    aux.logger.debug('1 array given, No concatenation needed')
+    auxiliary.logger.debug('1 array given, No concatenation needed')
     return an[0]
   
   sh_1=np.shape(an[0])
@@ -646,14 +646,14 @@ def concatenate_values(*an,axis=None):
   if axis is not None:          
     if axis>len(sh_1):
         axis=None#flatten arrays #behaviour not documented on numpy doc 
-        aux.logger.debug(
+        auxiliary.logger.debug(
         "axis value too high: {}>{}, might result in flattened array"
         .format(axis,len(sh_1)))
   if not similar:
-    aux.logger.error("Some of the array's could not be concatenated")
+    auxiliary.logger.error("Some of the array's could not be concatenated")
     raise ValueError
   else:
-    aux.logger.debug("concatenating arrays along axis {}".format(axis))
+    auxiliary.logger.debug("concatenating arrays along axis {}".format(axis))
     return np.concatenate(an,axis)
 
 
@@ -696,7 +696,7 @@ def param_peek(in_arr_cdfl,parameter=None,n_show=5,axis=0,cataxis=None):
         ' combined with a parameter in numpy.ndarray of dtype'+\
         ' float64 within file(s) OR numpy.ndarray of dtype float64' 
   if isinstance(in_arr_cdfl,str) and parameter:
-    p=extract_parameter(aux._tolist(in_arr_cdfl),parameter,axis=cataxis,cat=True)
+    p=extract_parameter(auxiliary._tolist(in_arr_cdfl),parameter,axis=cataxis,cat=True)
     p_arr = p.values
     u,n = p.unit,p.name
   elif isinstance(in_arr_cdfl,Parameter):
@@ -705,7 +705,7 @@ def param_peek(in_arr_cdfl,parameter=None,n_show=5,axis=0,cataxis=None):
     u,n = p.unit,p.name
   else:
     if not hasattr(in_arr_cdfl,'__iter__'):
-      aux.logger.warning(W_STR)
+      auxiliary.logger.warning(W_STR)
         
       return
 
@@ -717,10 +717,10 @@ def param_peek(in_arr_cdfl,parameter=None,n_show=5,axis=0,cataxis=None):
       p_arr=in_arr_cdfl
   try:
     if not p_arr.dtype==np.float64:
-      aux.logger.warning(W_STR) 
+      auxiliary.logger.warning(W_STR) 
       return
   except Exception:
-    aux.logger.debug(
+    auxiliary.logger.debug(
       "Input of type '{}' will be read as numpy.ndarray"
       .format(type(p_arr)))
     p_arr=np.array(p_arr)
@@ -767,7 +767,7 @@ def param_peek(in_arr_cdfl,parameter=None,n_show=5,axis=0,cataxis=None):
   peek_info.append("Largest jump over 1 index[along axis={}]: {:10f}"
     .format(axis,dparam_max))
 
-  aux.logger.info('\n\t'.join(peek_info))
+  auxiliary.logger.info('\n\t'.join(peek_info))
   return
 
 
@@ -837,8 +837,8 @@ def dl_ftp(url='swarm-diss.eo.esa.int',**kwargs):
   if ftpkw['param0']: ftpkw['param0']=str(ftpkw['param0']).lower()
 
   
-  aux.logger.debug('url: {}'.format(url))
-  aux.logger.debug('kwargs in dl_ftp: {}'.format(ftpkw))
+  auxiliary.logger.debug('url: {}'.format(url))
+  auxiliary.logger.debug('kwargs in dl_ftp: {}'.format(ftpkw))
   
   if url.startswith(pre):
     url=url[len(pre):]
@@ -859,20 +859,20 @@ def dl_ftp(url='swarm-diss.eo.esa.int',**kwargs):
   except Exception:
     baseurl,url_lloc=url,None
   try:
-    aux.logger.debug('attempting to connect to {}...'.format(baseurl))
+    auxiliary.logger.debug('attempting to connect to {}...'.format(baseurl))
     dummy_host=ftputil.FTPHost(baseurl, ftpkw['user'], ftpkw['pw'],
       session_factory=s_factory)
     dummy_host.close()
   except OSError:
-    aux.logger.error('Unable to connect to {}'.format(url) )
+    auxiliary.logger.error('Unable to connect to {}'.format(url) )
     raise
 
   with ftputil.FTPHost(baseurl, ftpkw['user'], ftpkw['pw']
                       ,session_factory=s_factory) as host:
-    aux.logger.debug('successfully connected to {}'.format(baseurl))
+    auxiliary.logger.debug('successfully connected to {}'.format(baseurl))
     
     if url_lloc:
-      aux.logger.debug('changing remote directory to {}'.format(url_lloc))
+      auxiliary.logger.debug('changing remote directory to {}'.format(url_lloc))
       host.chdir(host.path.dirname(url_lloc))
       
     found=False
@@ -881,10 +881,10 @@ def dl_ftp(url='swarm-diss.eo.esa.int',**kwargs):
       if url.endswith(fmt.lower()) or url.endswith(fmt.upper()):
         if host.path.isfile(host.path.basename(url)):
           found=True
-          aux.logger.debug('Found file:{}'.format(url))
+          auxiliary.logger.debug('Found file:{}'.format(url))
           if os.path.isfile(
               os.path.join(ftpkw['dst'],host.path.basename(url))):
-            aux.logger.debug('File {} already downloaded.'
+            auxiliary.logger.debug('File {} already downloaded.'
               .format(host.path.basename(url)))
             return os.path.join(ftpkw['dst'],host.path.basename(url))
         
@@ -899,13 +899,13 @@ def dl_ftp(url='swarm-diss.eo.esa.int',**kwargs):
           if host.path.isdir(name):
               colored=True
               print('({c:{f}{w}})'
-                .format(c=i+1,f='',w=digits),aux._CSI2str(34,name+'/'))
+                .format(c=i+1,f='',w=digits),auxiliary._CSI2str(34,name+'/'))
           if not colored:
             for fmt in ftpkw['cdfsuffix']+['.zip']:
               if name.endswith(fmt.upper()) or name.endswith(fmt.lower()):
                 colored=True
                 print('({c:{f}{w}})'
-                  .format(c=i+1,f='',w=digits),aux._CSI2str(32,name))
+                  .format(c=i+1,f='',w=digits),auxiliary._CSI2str(32,name))
                 break
 
         if not colored:    
@@ -915,33 +915,33 @@ def dl_ftp(url='swarm-diss.eo.esa.int',**kwargs):
       #remove anything named 'Previous'
       if filters['use_current']:
           if 'Previous' in flist:
-            aux.logger.debug("'Previous' filtered away")
+            auxiliary.logger.debug("'Previous' filtered away")
             flist.remove('Previous')
             return
       #remove all folders not starting with param_dic[filters['param0']]
       #if any such folders found
-      if filters['param0'] in aux.PRODUCT_DIC:
+      if filters['param0'] in auxiliary.PRODUCT_DIC:
           dirnames_rm=[]
           found_param=False
           for f in flist:
             if host.path.isdir(f):
-              if f[:3]==aux.PRODUCT_DIC[filters['param0'].lower()]:
-                aux.logger.debug('selecting param dir {}'.format(f))
+              if f[:3]==auxiliary.PRODUCT_DIC[filters['param0'].lower()]:
+                auxiliary.logger.debug('selecting param dir {}'.format(f))
                 found_param=True
               else:
                 dirnames_rm.append(f)
           if found_param:
             for d in dirnames_rm:
-              aux.logger.debug("'{}' filtered away".format(d))
+              auxiliary.logger.debug("'{}' filtered away".format(d))
               flist.remove(d)
             for f in reversed(flist):
               if not host.path.isdir(f):
-                aux.logger.debug("'{}' filtered away".format(f))
+                auxiliary.logger.debug("'{}' filtered away".format(f))
                 flist.remove(f)
 
             return
       #remove all 'Sat_X' folders where X not in filters['sat']
-      s=aux._tolist(filters['sat'])
+      s=auxiliary._tolist(filters['sat'])
       if s[0]:
         for i,si in enumerate(s):
           s[i]=si.upper()
@@ -949,7 +949,7 @@ def dl_ftp(url='swarm-diss.eo.esa.int',**kwargs):
           if host.path.isdir(f):
             if f.startswith('Sat_') and \
                 ''.join(f.split('_')[1:]) not in s:
-              aux.logger.debug("'{}' filtered away".format(f))
+              auxiliary.logger.debug("'{}' filtered away".format(f))
               flist.remove(f)
       return 
 
@@ -964,7 +964,7 @@ def dl_ftp(url='swarm-diss.eo.esa.int',**kwargs):
       if ftpkw['use_filtering']:
         filter_remote_dirs(flist,**ftpkw)
       if len(flist)==1:
-        aux.logger.debug('entering {}...'.format(flist[0]))
+        auxiliary.logger.debug('entering {}...'.format(flist[0]))
         selected=flist
       elif not flist:
         return flist
@@ -990,7 +990,7 @@ def dl_ftp(url='swarm-diss.eo.esa.int',**kwargs):
         else:
           flist=list_files(flist)
           selected=[flist[i-1] for i in \
-            aux._in2range(len(flist),msg=aux.DL_FTP_MSG) if i is not 0]
+            auxiliary._in2range(len(flist),msg=auxiliary.DL_FTP_MSG) if i is not 0]
           if not selected: break
       
 
@@ -1003,7 +1003,7 @@ def dl_ftp(url='swarm-diss.eo.esa.int',**kwargs):
           flist=read_remote_txt_file(selected[0])
           list_files(flist)
           selected=[flist[i-1] for i in \
-            aux._in2range(len(flist),msg=aux.DL_FTP_MSG) if i is not 0]
+            auxiliary._in2range(len(flist),msg=auxiliary.DL_FTP_MSG) if i is not 0]
           found=True
         elif host.path.isfile(selected[0]):
             #file(s) selected #(>0 files + dirs)
@@ -1011,7 +1011,7 @@ def dl_ftp(url='swarm-diss.eo.esa.int',**kwargs):
         else:#1 dir selected
             host.chdir(selected[0])
     if not selected:
-      aux.logger.info('No file selected')
+      auxiliary.logger.info('No file selected')
       return []
     f_dl,f_out=[],[]
     for s in selected:
@@ -1028,15 +1028,15 @@ def dl_ftp(url='swarm-diss.eo.esa.int',**kwargs):
           f_dl += dir_content
       else:
         f_dl.append(s)
-    if aux._is_interactive() and len(f_dl)>10:
-      aux.logger.info(
+    if auxiliary._is_interactive() and len(f_dl)>10:
+      auxiliary.logger.info(
         "{} entries will be downloaded to {}"
         .format(len(f_dl),ftpkw['dst']))
       answer='s'
       while answer.strip().lower()=='s':
         answer=input("Continue? [y/n/s shows entries] (y): ")
         if answer.strip().lower()=='s':
-          aux.logger.info(
+          auxiliary.logger.info(
             'List of entries to be downloaded:\n\t{}'
             .format('\n\t'.join(f_dl)))
       if answer.strip('Yy '):
@@ -1047,14 +1047,14 @@ def dl_ftp(url='swarm-diss.eo.esa.int',**kwargs):
           ftpkw['dst'],host.path.basename(f)))
         f_out.append(localloc)
         if os.path.isfile(localloc):
-          aux.logger.info(
+          auxiliary.logger.info(
             '{} already in {}'.format(urlloc,os.path.dirname(localloc)))
           continue
 
         
-        aux.logger.info('{} downloading to\n\t{}'.format(urlloc,localloc))
+        auxiliary.logger.info('{} downloading to\n\t{}'.format(urlloc,localloc))
         host.download(f, localloc)
-    return aux._single_item_list_open(f_out)
+    return auxiliary._single_item_list_open(f_out)
 
 
 def read_sp3(fname,doctype=2,SI_units=True):
@@ -1102,7 +1102,7 @@ def read_sp3(fname,doctype=2,SI_units=True):
       try:
         header = [next(f)]
       except StopIteration:
-        aux.logger.error("File is empty")
+        auxiliary.logger.error("File is empty")
         raise EOFError('Empty file')
       c=1
       for line in f:
@@ -1129,7 +1129,7 @@ def read_sp3(fname,doctype=2,SI_units=True):
             ('z',np.float64),('t',np.float64)]
     a=np.fromregex(fname,pattern,dtype)
     t=np.empty(len(a['date']),dtype=object)
-    t=str2dt_v(a['date'])+aux._float_us_to_timedelta_v(a['t'])
+    t=str2dt_v(a['date'])+auxiliary._float_us_to_timedelta_v(a['t'])
     if SI_units:
       #km -> m
       a['x']*=km2m
@@ -1153,7 +1153,7 @@ def read_sp3(fname,doctype=2,SI_units=True):
 
     a=np.fromregex(fname,pattern,dtype)
     t=np.empty(len(a['date']),dtype=object)
-    t=str2dt_v(a['date'])+aux._float_us_to_timedelta_v(a['t'])
+    t=str2dt_v(a['date'])+auxiliary._float_us_to_timedelta_v(a['t'])
     
     km2m=1000
     dm2m=0.1
@@ -1230,7 +1230,7 @@ def _info_from_filename(fn,key=None):
   fn=os.path.basename(fn)
   filelen=len(fn)
   if filelen not in [59,63,70]: 
-    aux.logger.debug(
+    auxiliary.logger.debug(
       "filename '{}' does not follow standard syntax set for ESA Swarm CDF's "
       .format(fn))
     if filelen<55:
@@ -1288,9 +1288,9 @@ def _filter_filelist(fl,**kwargs):
   }
   filters.update(kwargs)
   
-  #prod_in_dic=bool(filters['param0'] in aux.PRODUCT_DIC)
+  #prod_in_dic=bool(filters['param0'] in auxiliary.PRODUCT_DIC)
   prod_in_dic=filters['param0'] is not None
-  if prod_in_dic: prod_in_dic = filters['param0'].lower() in aux.PRODUCT_DIC
+  if prod_in_dic: prod_in_dic = filters['param0'].lower() in auxiliary.PRODUCT_DIC
   
   sat_in_dic=filters['sat'] is not None
   period_in_dic=filters['period'] is not None
@@ -1299,14 +1299,14 @@ def _filter_filelist(fl,**kwargs):
   def keep_item(f,filters):
     prod_info=_info_from_filename(f)
     if (sat_in_dic and 
-      prod_info['product'][3] not in aux._tolist(filters['sat'])):
+      prod_info['product'][3] not in auxiliary._tolist(filters['sat'])):
         return False
     elif (prod_in_dic and 
-        aux.PRODUCT_DIC[filters['param0'].lower()]!=prod_info['product'][:3]):
+        auxiliary.PRODUCT_DIC[filters['param0'].lower()]!=prod_info['product'][:3]):
       return False
     elif (period_in_dic and 
-        not (aux._is_in_period(prod_info['t0'],filters['period']) or
-        (aux._is_in_period(prod_info['t1'],filters['period'])))):
+        not (auxiliary._is_in_period(prod_info['t0'],filters['period']) or
+        (auxiliary._is_in_period(prod_info['t1'],filters['period'])))):
       return False
     else:
       return True
@@ -1372,7 +1372,7 @@ def read_EFI_prov_txt(fname,*params,filter_nominal=False):
       fdata_list.append(d[nominal])
   else:
     fdata_list=list(filedata)
-  timestamp = aux._MJD2000_datetime(fdata_list[0],fdata_list[1])
+  timestamp = auxiliary._MJD2000_datetime(fdata_list[0],fdata_list[1])
   
   out_dic={ 'timestamp':timestamp,
             'latitude' :fdata_list[2],
@@ -1385,10 +1385,10 @@ def read_EFI_prov_txt(fname,*params,filter_nominal=False):
   if len(params):
     out=[]
     try:
-      for p in aux._tolist(params):
+      for p in auxiliary._tolist(params):
         out.append(out_dic[p.lower()])
-        aux.logger.debug("param '{}' found".format(p))
-      return aux._single_item_list_open(out)
+        auxiliary.logger.debug("param '{}' found".format(p))
+      return auxiliary._single_item_list_open(out)
     except Exception:
       pass
   return out_dic
@@ -1410,7 +1410,7 @@ class Parameter:
   (eg. ``myparam()``) or by accessing its indices (eg. ``myparam[2]``) 
   """
   def __init__(self,values,unit='',name=''):
-    self.values=aux._single_item_list_open(values)
+    self.values=auxiliary._single_item_list_open(values)
     self.unit=unit
     self.name=name
   def __call__(self):
